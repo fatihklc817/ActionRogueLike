@@ -19,6 +19,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(VisibleAnywhere)
+	class USpringArmComponent* SpringArmComp;
+
+	UPROPERTY(VisibleAnywhere)
+	class UCameraComponent* CameraComp;
+
+	void MoveForward(float value);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
