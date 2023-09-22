@@ -4,7 +4,9 @@
 #include "ARLCharacter.h"
 
 #include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AARLCharacter::AARLCharacter()
@@ -13,10 +15,15 @@ AARLCharacter::AARLCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
+	SpringArmComp->bUsePawnControlRotation = true;
 	SpringArmComp->SetupAttachment(RootComponent);
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+		
+	bUseControllerRotationYaw = false;
 }
 
 // Called when the game starts or when spawned
@@ -28,12 +35,29 @@ void AARLCharacter::BeginPlay()
 
 void AARLCharacter::MoveForward(float value)
 {
-	AddMovementInput(GetActorForwardVector(),value);
+	FRotator ControlRot = GetControlRotation();
+	ControlRot.Pitch = 0;
+	ControlRot.Roll = 0;
+	
+	AddMovementInput(ControlRot.Vector(),value);
+}
+
+void AARLCharacter::MoveRight(float value)
+{
+	FRotator ControlRot = GetControlRotation();
+	ControlRot.Pitch = 0;
+	ControlRot.Roll = 0;
+
+	//x forward red // y right green // z up blue
+	FVector RightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);  // getting rotator's y axis 
+	
+	AddMovementInput(RightVector,value);
 }
 
 // Called every frame
 void AARLCharacter::Tick(float DeltaTime)
 {
+	
 	Super::Tick(DeltaTime);
 
 }
@@ -44,7 +68,11 @@ void AARLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAxis("MoveForward",this,&AARLCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight",this,&AARLCharacter::MoveRight);
+	
 	PlayerInputComponent->BindAxis("Turn",this,&APawn::AddControllerYawInput);
+	PlayerInputComponent->BindAxis("LookUp",this,&APawn::AddControllerPitchInput);
+	
 
 }
 
