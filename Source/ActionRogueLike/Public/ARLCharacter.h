@@ -11,6 +11,11 @@ class ACTIONROGUELIKE_API AARLCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+protected:
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> ProjectileClass;
+	
 public:
 	// Sets default values for this character's properties
 	AARLCharacter();
@@ -28,6 +33,9 @@ protected:
 	void MoveForward(float value);
 
 	void MoveRight(float value);
+
+	void PrimaryAttack();
+
 
 public:	
 	// Called every frame

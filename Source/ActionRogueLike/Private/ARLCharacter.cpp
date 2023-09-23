@@ -54,6 +54,18 @@ void AARLCharacter::MoveRight(float value)
 	AddMovementInput(RightVector,value);
 }
 
+void AARLCharacter::PrimaryAttack()
+{
+	FVector HandMuzzleSocketLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	
+	FTransform SpawnTransform = FTransform(GetControlRotation(),HandMuzzleSocketLocation);
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	
+	
+	GetWorld()->SpawnActor<AActor>(ProjectileClass,SpawnTransform,SpawnParameters);
+}
+
 // Called every frame
 void AARLCharacter::Tick(float DeltaTime)
 {
@@ -72,6 +84,9 @@ void AARLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	
 	PlayerInputComponent->BindAxis("Turn",this,&APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp",this,&APawn::AddControllerPitchInput);
+
+	PlayerInputComponent->BindAction("Jump",IE_Pressed,this,&AARLCharacter::Jump);
+	PlayerInputComponent->BindAction("PrimaryAttack",IE_Pressed,this,&AARLCharacter::PrimaryAttack);
 	
 
 }
