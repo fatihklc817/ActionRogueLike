@@ -13,8 +13,15 @@ class ACTIONROGUELIKE_API AARLCharacter : public ACharacter
 
 protected:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Attack")
 	TSubclassOf<AActor> ProjectileClass;
+
+	UPROPERTY(EditAnywhere,Category="Attack")
+	UAnimMontage* AttackAnim;
+
+	FTimerHandle TimerHandle_PrimaryAttack;
+
+	
 	
 public:
 	// Sets default values for this character's properties
@@ -30,11 +37,19 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* CameraComp;
 
+	UPROPERTY(VisibleAnywhere)
+	class UARLInteractionComponent* InteractionComp;
+
 	void MoveForward(float value);
 
 	void MoveRight(float value);
 
 	void PrimaryAttack();
+
+	UFUNCTION()
+	void PrimaryAttack_TimeElapsed();
+
+	void PrimaryInteract();
 
 
 public:	

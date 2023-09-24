@@ -3,6 +3,7 @@
 
 #include "ARLCharacter.h"
 
+#include "ARLInteractionComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -20,6 +21,8 @@ AARLCharacter::AARLCharacter()
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
+
+	InteractionComp = CreateDefaultSubobject<UARLInteractionComponent>("InteractionComp");
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 		
@@ -56,6 +59,15 @@ void AARLCharacter::MoveRight(float value)
 
 void AARLCharacter::PrimaryAttack()
 {
+	PlayAnimMontage(AttackAnim);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack,this,&AARLCharacter::PrimaryAttack_TimeElapsed,0.2);
+	
+	
+}
+
+void AARLCharacter::PrimaryAttack_TimeElapsed()
+{
 	FVector HandMuzzleSocketLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 	
 	FTransform SpawnTransform = FTransform(GetControlRotation(),HandMuzzleSocketLocation);
@@ -64,6 +76,14 @@ void AARLCharacter::PrimaryAttack()
 	
 	
 	GetWorld()->SpawnActor<AActor>(ProjectileClass,SpawnTransform,SpawnParameters);
+}
+
+void AARLCharacter::PrimaryInteract()
+{
+	if (InteractionComp)
+	{
+		InteractionComp->PrimaryInteract();
+	}
 }
 
 // Called every frame
@@ -87,6 +107,7 @@ void AARLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 	PlayerInputComponent->BindAction("Jump",IE_Pressed,this,&AARLCharacter::Jump);
 	PlayerInputComponent->BindAction("PrimaryAttack",IE_Pressed,this,&AARLCharacter::PrimaryAttack);
+	PlayerInputComponent->BindAction("PrimaryInteract",IE_Pressed,this,&AARLCharacter::PrimaryInteract);
 	
 
 }
