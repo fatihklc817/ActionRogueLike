@@ -27,6 +27,11 @@ AARLExplosiveBarrel::AARLExplosiveBarrel()
 
 }
 
+void AARLExplosiveBarrel::FireImpulseTrigger()
+{
+	RadialForceComp->FireImpulse();
+}
+
 // Called when the game starts or when spawned
 void AARLExplosiveBarrel::BeginPlay()
 {

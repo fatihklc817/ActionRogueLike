@@ -22,6 +22,9 @@ public:
 	// Sets default values for this actor's properties
 	AARLExplosiveBarrel();
 
+	UFUNCTION(BlueprintCallable)
+	void FireImpulseTrigger();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
