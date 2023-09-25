@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ARLBaseProjectile.h"
 #include "GameFramework/Actor.h"
 #include "ARLMagicProjectile.generated.h"
 
 UCLASS()
-class ACTIONROGUELIKE_API AARLMagicProjectile : public AActor
+class ACTIONROGUELIKE_API AARLMagicProjectile : public AARLBaseProjectile
 {
 	GENERATED_BODY()
 	
@@ -19,14 +20,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere , BlueprintReadOnly)
-	class USphereComponent* SphereComp;
-
-	UPROPERTY(VisibleAnywhere , BlueprintReadOnly)
-	class UProjectileMovementComponent* ProjectileMovementComp;
-
-	UPROPERTY(VisibleAnywhere ,  BlueprintReadOnly)
-	UParticleSystemComponent* ParticleSystemComp;
 
 public:	
 	// Called every frame

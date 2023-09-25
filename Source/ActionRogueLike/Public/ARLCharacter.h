@@ -13,15 +13,19 @@ class ACTIONROGUELIKE_API AARLCharacter : public ACharacter
 
 protected:
 
-	UPROPERTY(EditAnywhere, Category="Attack")
-	TSubclassOf<AActor> ProjectileClass;
+	UPROPERTY(EditAnywhere,Category="Attack")
+	TSubclassOf<AActor> BlackHoleProjectileClass;
+	
+	UPROPERTY(EditAnywhere,Category="Attack")
+	TSubclassOf<AActor> PrimaryMagicProjectileClass;
+	
 
 	UPROPERTY(EditAnywhere,Category="Attack")
-	UAnimMontage* AttackAnim;
+	UAnimMontage* PrimaryAttackAnim;
 
 	FTimerHandle TimerHandle_PrimaryAttack;
 
-	FVector EndTrace;
+	FTimerDelegate TimerDelegate_PrimaryAttack;
 
 	
 	
@@ -49,9 +53,19 @@ protected:
 	void PrimaryAttack();
 
 	UFUNCTION()
-	void PrimaryAttack_TimeElapsed();
+	void PrimaryAttack_TimeElapsed(const FVector& EndPos);
 
+	UFUNCTION()
 	void PrimaryInteract();
+
+	UFUNCTION()
+	void BlackholeSkill();
+
+	UFUNCTION()
+	bool RayFromCamera(FVector &EndTrace);
+
+	UFUNCTION()
+	void SpawnProjectile(FVector Endpos, FVector HandPos , TSubclassOf<AActor> spawnClass);
 
 
 public:	
