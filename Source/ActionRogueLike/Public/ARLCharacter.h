@@ -21,6 +21,8 @@ protected:
 
 	FTimerHandle TimerHandle_PrimaryAttack;
 
+	FVector EndTrace;
+
 	
 	
 public:

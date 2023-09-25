@@ -61,6 +61,22 @@ void AARLCharacter::PrimaryAttack()
 {
 	PlayAnimMontage(AttackAnim);
 
+	//line trace from camera
+	FHitResult HitResult;
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+
+	FVector StartTrace = CameraComp->GetComponentLocation();
+	EndTrace = CameraComp->GetComponentLocation() + (GetControlRotation().Vector() *5000);
+
+	bool bTraceSuccess =  GetWorld()->LineTraceSingleByObjectType(HitResult,StartTrace,EndTrace,ObjectQueryParams);
+	//DrawDebugLine(GetWorld(),StartTrace,EndTrace,FColor::Red,false,3,0,3);
+	if (bTraceSuccess)
+	{
+		EndTrace = HitResult.ImpactPoint;
+	}
+	
 	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack,this,&AARLCharacter::PrimaryAttack_TimeElapsed,0.2);
 	
 	
@@ -70,7 +86,11 @@ void AARLCharacter::PrimaryAttack_TimeElapsed()
 {
 	FVector HandMuzzleSocketLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 	
-	FTransform SpawnTransform = FTransform(GetControlRotation(),HandMuzzleSocketLocation);
+
+	
+	FVector rotation = EndTrace - HandMuzzleSocketLocation;
+	rotation.Normalize();
+	FTransform SpawnTransform = FTransform(rotation.Rotation(),HandMuzzleSocketLocation);
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 

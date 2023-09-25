@@ -38,6 +38,7 @@ void AARLExplosiveBarrel::BeginPlay()
 	Super::BeginPlay();
 }
 
+//before begin after constructer
 void AARLExplosiveBarrel::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
@@ -58,7 +59,10 @@ void AARLExplosiveBarrel::OnComponentHit(UPrimitiveComponent* HitComp, AActor* O
 // Called every frame
 void AARLExplosiveBarrel::Tick(float DeltaTime)
 {
+	
 	Super::Tick(DeltaTime);
+
+	
 
 }
 
