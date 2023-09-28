@@ -18,6 +18,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere,Category="Attack")
 	TSubclassOf<AActor> PrimaryMagicProjectileClass;
+
+	UPROPERTY(EditAnywhere,Category="Attack")
+	TSubclassOf<AActor> TeleportProjectileClass;
 	
 
 	UPROPERTY(EditAnywhere,Category="Attack")
@@ -26,6 +29,24 @@ protected:
 	FTimerHandle TimerHandle_PrimaryAttack;
 
 	FTimerDelegate TimerDelegate_PrimaryAttack;
+
+	FTimerHandle TimerHandle_SKillE;
+	FTimerDelegate TimerDelegate_SkillE;
+
+	
+	UPROPERTY(VisibleAnywhere)
+	class USpringArmComponent* SpringArmComp;
+
+	UPROPERTY(VisibleAnywhere)
+	class UCameraComponent* CameraComp;
+
+	UPROPERTY(VisibleAnywhere)
+	class UARLInteractionComponent* InteractionComp;
+	
+public:
+	
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly , Category="Components")
+	class UARLAttributeComponent* AttributeComponent;
 
 	
 	
@@ -37,14 +58,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere)
-	class USpringArmComponent* SpringArmComp;
-
-	UPROPERTY(VisibleAnywhere)
-	class UCameraComponent* CameraComp;
-
-	UPROPERTY(VisibleAnywhere)
-	class UARLInteractionComponent* InteractionComp;
 
 	void MoveForward(float value);
 
@@ -62,10 +75,19 @@ protected:
 	void BlackholeSkill();
 
 	UFUNCTION()
+	void SkillE();
+
+	UFUNCTION()
+	void SkillE_TimeElapsed(const FVector& EndPos);
+
+	UFUNCTION()
+	void SkillE_Arrived(AActor* SpawnedActor);
+
+	UFUNCTION()
 	bool RayFromCamera(FVector &EndTrace);
 
 	UFUNCTION()
-	void SpawnProjectile(FVector Endpos, FVector HandPos , TSubclassOf<AActor> spawnClass);
+	AActor* SpawnProjectile(FVector Endpos, FVector HandPos , TSubclassOf<AActor> spawnClass);
 
 
 public:	

@@ -3,6 +3,8 @@
 
 #include "ARLMagicProjectile.h"
 
+#include "ARLAttributeComponent.h"
+#include "ARLCharacter.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -14,14 +16,29 @@ AARLMagicProjectile::AARLMagicProjectile()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	ProjectileMovementComp -> InitialSpeed = 2000;
-	
-	
+
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this,&AARLMagicProjectile::OnActorOverlap);
 }
 
 // Called when the game starts or when spawned
 void AARLMagicProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+	
+}
+
+void AARLMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (ensure(OtherActor))
+	{	
+		UARLAttributeComponent* otherActorAttributeComp;	
+		if (auto pawn = Cast<AARLCharacter>(OtherActor))
+		{
+			otherActorAttributeComp = pawn->AttributeComponent;
+			otherActorAttributeComp->ApplyHealthChange(-20);
+			Destroy();
+		}
+	}
 	
 }
 
