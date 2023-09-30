@@ -15,7 +15,8 @@ UARLAttributeComponent::UARLAttributeComponent()
 bool UARLAttributeComponent::ApplyHealthChange(float delta)
 {
 	Health += delta;
-
+	OnHealthChanged.Broadcast(nullptr,this,Health,delta);
+	
 	return true;
 }
 
