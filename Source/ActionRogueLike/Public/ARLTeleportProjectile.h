@@ -15,12 +15,24 @@ class ACTIONROGUELIKE_API AARLTeleportProjectile : public AARLBaseProjectile
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditAnywhere)
-	class UParticleSystem* destroyParticle; 
+	UPROPERTY(EditDefaultsOnly,Category="Teleport")
+	float TeleportDelay;
+
+	UPROPERTY(EditDefaultsOnly,Category="Teleport")
+	float DetonateDelay;
+
+	FTimerHandle TimerHandle_DelayedDetonate;
+
+public:
+	AARLTeleportProjectile();
 	
 protected:
-	virtual void Destroyed() override;
-
 	virtual void BeginPlay() override;
 	
+	virtual void Explode_Implementation() override;
+	
+	void TeleportInstigator();
+
+
+
 };

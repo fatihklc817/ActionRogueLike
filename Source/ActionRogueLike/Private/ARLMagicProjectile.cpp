@@ -30,11 +30,11 @@ void AARLMagicProjectile::BeginPlay()
 void AARLMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (ensure(OtherActor) && OtherActor != GetInstigator())
-	{	
-		UARLAttributeComponent* otherActorAttributeComp;	
-		if (auto pawn = Cast<AARLCharacter>(OtherActor))
+	{
+		
+		UARLAttributeComponent* otherActorAttributeComp = Cast<UARLAttributeComponent>(OtherActor->GetComponentByClass(UARLAttributeComponent::StaticClass()));	
+		if (otherActorAttributeComp)
 		{
-			otherActorAttributeComp = pawn->AttributeComponent;
 			otherActorAttributeComp->ApplyHealthChange(-20);
 			Destroy();
 		}

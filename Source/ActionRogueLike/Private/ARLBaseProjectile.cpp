@@ -16,28 +16,38 @@ AARLBaseProjectile::AARLBaseProjectile()
 
 	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
 	SphereComp->SetCollisionProfileName("Projectile");
+	SphereComp->OnComponentHit.AddDynamic(this,&AARLBaseProjectile::OnActorHit);
 	RootComponent = SphereComp;
 
-	ParticleSystemComp = CreateDefaultSubobject<UParticleSystemComponent>("ParticleSystemComponent");
-	ParticleSystemComp->SetupAttachment(SphereComp);
+	EffectParticleSystemComp = CreateDefaultSubobject<UParticleSystemComponent>("ParticleSystemComponent");
+	EffectParticleSystemComp->SetupAttachment(SphereComp);
 
 	ProjectileMovementComp = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComp");
-	ProjectileMovementComp->InitialSpeed = 1000;
+	ProjectileMovementComp->InitialSpeed = 8000;
 	ProjectileMovementComp->bRotationFollowsVelocity = true;
 	ProjectileMovementComp->bInitialVelocityInLocalSpace = true;
+	ProjectileMovementComp->ProjectileGravityScale = 0;
 }
 
-// Called when the game starts or when spawned
-void AARLBaseProjectile::BeginPlay()
+void AARLBaseProjectile::PostInitializeComponents()
 {
-	Super::BeginPlay();
-	
+	Super::PostInitializeComponents();
 }
 
-// Called every frame
-void AARLBaseProjectile::Tick(float DeltaTime)
+
+void AARLBaseProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	Super::Tick(DeltaTime);
-
+	Explode();
 }
+
+void AARLBaseProjectile::Explode_Implementation()
+{
+	if (ensure(!IsPendingKill()))
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this,ImpactVFX,GetActorLocation(),GetActorRotation());
+		Destroy();
+	}
+}
+
+
 

@@ -12,15 +12,17 @@ class ACTIONROGUELIKE_API AARLBaseProjectile : public AActor
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY(EditDefaultsOnly,Category="Effects")
+	UParticleSystem* ImpactVFX;
 	
-	UPROPERTY(VisibleAnywhere , BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category="Components")
 	class USphereComponent* SphereComp;
 
-	UPROPERTY(VisibleAnywhere , BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere , BlueprintReadOnly , Category="Components")
 	class UProjectileMovementComponent* ProjectileMovementComp;
 
-	UPROPERTY(VisibleAnywhere ,  BlueprintReadOnly)
-	UParticleSystemComponent* ParticleSystemComp;
+	UPROPERTY(VisibleAnywhere ,  BlueprintReadOnly , Category="Components")
+	UParticleSystemComponent* EffectParticleSystemComp;
 
 
 public:	
@@ -29,12 +31,15 @@ public:
 	
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	virtual void PostInitializeComponents() override;
+	
 
+	UFUNCTION()
+	virtual void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit );
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
+	void Explode();
+
 	
 
 };

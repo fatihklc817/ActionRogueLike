@@ -30,8 +30,9 @@ AARLCharacter::AARLCharacter()
 	AttributeComponent = CreateDefaultSubobject<UARLAttributeComponent>("AttributeComp");
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-		
+	
 	bUseControllerRotationYaw = false;
+	
 }
 
 // Called when the game starts or when spawned
@@ -65,8 +66,7 @@ void AARLCharacter::MoveRight(float value)
 void AARLCharacter::PrimaryAttack()
 {
 	PlayAnimMontage(PrimaryAttackAnim);
-
-	//line trace from camera
+	
 	FVector PrimaryAttackEndPos;
 	RayFromCamera(PrimaryAttackEndPos);
 
@@ -94,16 +94,24 @@ void AARLCharacter::PrimaryInteract()
 
 void AARLCharacter::BlackholeSkill()
 {
+	PlayAnimMontage(PrimaryAttackAnim);
 	FVector EndPos;
 	bool bSuccess = RayFromCamera(EndPos);
-	FVector HandMuzzleSocketLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-	SpawnProjectile(EndPos , HandMuzzleSocketLocation,BlackHoleProjectileClass);
 	
+	TimerDelegate_BlackHoleSkill.BindUFunction(this,FName("BlackholeSkill_TimeElapsed"),EndPos);
+	GetWorldTimerManager().SetTimer(TimerHandle_BlackholeSkill,TimerDelegate_BlackHoleSkill,0.2,false);
+}
+
+void AARLCharacter::BlackholeSkill_TimeElapsed(const FVector& Endpos)
+{
+	FVector HandMuzzleSocketLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	
+	SpawnProjectile(Endpos , HandMuzzleSocketLocation,BlackHoleProjectileClass);
 }
 
 void AARLCharacter::SkillE()
 {
-	//animaation puf
+	PlayAnimMontage(PrimaryAttackAnim);
 	FVector EndPos;
 	bool bSuccess = RayFromCamera(EndPos);
 
@@ -115,26 +123,22 @@ void AARLCharacter::SkillE()
 void AARLCharacter::SkillE_TimeElapsed(const FVector& EndPos)
 {
 	FVector HandleMuzzleSockerLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-	AActor* SpawnedActor = SpawnProjectile(EndPos , HandleMuzzleSockerLocation, TeleportProjectileClass);
-	FTimerHandle TimerHandleSkillE_Arrive;
-	FTimerDelegate TimerdelegateSkillEArrived;
-	TimerdelegateSkillEArrived.BindUFunction(this,FName("SkillE_Arrived"),SpawnedActor);
-	GetWorldTimerManager().SetTimer(TimerHandleSkillE_Arrive,TimerdelegateSkillEArrived,0.4,false);
+	SpawnProjectile(EndPos , HandleMuzzleSockerLocation, TeleportProjectileClass);
 }
 
-void AARLCharacter::SkillE_Arrived(AActor* SpawnedActor)
-{
-	FVector teleportLocation = SpawnedActor->GetActorLocation();
-	SpawnedActor->Destroy();
-	//patlama particle
-	FTimerHandle timerHandleTeleportPawn;
-	GetWorldTimerManager().SetTimer(timerHandleTeleportPawn,[teleportLocation,SpawnedActor]
-	{
-		AActor* pawn = SpawnedActor->GetInstigator();
-		pawn->TeleportTo(teleportLocation,pawn->GetActorRotation());
-	},0.2,false); 
-	
-}
+// void AARLCharacter::SkillE_Arrived(AActor* SpawnedActor)
+// {
+// 	FVector teleportLocation = SpawnedActor->GetActorLocation();
+// 	SpawnedActor->Destroy();
+// 	//patlama particle
+// 	FTimerHandle timerHandleTeleportPawn;
+// 	GetWorldTimerManager().SetTimer(timerHandleTeleportPawn,[teleportLocation,SpawnedActor]
+// 	{
+// 		AActor* pawn = SpawnedActor->GetInstigator();
+// 		pawn->TeleportTo(teleportLocation,pawn->GetActorRotation());
+// 	},0.2,false); 
+// 	
+// }
 
 bool AARLCharacter::RayFromCamera(FVector& EndTrace)
 {

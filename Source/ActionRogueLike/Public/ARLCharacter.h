@@ -27,11 +27,13 @@ protected:
 	UAnimMontage* PrimaryAttackAnim;
 
 	FTimerHandle TimerHandle_PrimaryAttack;
-
 	FTimerDelegate TimerDelegate_PrimaryAttack;
 
 	FTimerHandle TimerHandle_SKillE;
 	FTimerDelegate TimerDelegate_SkillE;
+
+	FTimerHandle TimerHandle_BlackholeSkill;
+	FTimerDelegate TimerDelegate_BlackHoleSkill;
 
 	
 	UPROPERTY(VisibleAnywhere)
@@ -75,13 +77,16 @@ protected:
 	void BlackholeSkill();
 
 	UFUNCTION()
+	void BlackholeSkill_TimeElapsed(const FVector& Endpos);
+
+	UFUNCTION()
 	void SkillE();
 
 	UFUNCTION()
 	void SkillE_TimeElapsed(const FVector& EndPos);
 
-	UFUNCTION()
-	void SkillE_Arrived(AActor* SpawnedActor);
+	// UFUNCTION()
+	// void SkillE_Arrived(AActor* SpawnedActor);
 
 	UFUNCTION()
 	bool RayFromCamera(FVector &EndTrace);
