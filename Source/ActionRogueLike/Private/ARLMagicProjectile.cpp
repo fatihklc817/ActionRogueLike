@@ -35,8 +35,8 @@ void AARLMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponen
 		UARLAttributeComponent* otherActorAttributeComp = Cast<UARLAttributeComponent>(OtherActor->GetComponentByClass(UARLAttributeComponent::StaticClass()));	
 		if (otherActorAttributeComp)
 		{
-			otherActorAttributeComp->ApplyHealthChange(-20);
-			Destroy();
+			otherActorAttributeComp->ApplyHealthChange(-DamageAmount);
+			Explode();
 		}
 	}
 	

@@ -57,6 +57,8 @@ public:
 	AARLCharacter();
 
 protected:
+
+	virtual void PostInitializeComponents() override;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -94,6 +96,9 @@ protected:
 	UFUNCTION()
 	AActor* SpawnProjectile(FVector Endpos, FVector HandPos , TSubclassOf<AActor> spawnClass);
 
+	UFUNCTION()
+	void onHealthChanged(AActor* InstigatorActor, UARLAttributeComponent* OwninComp, float newHealth, float delta);
+	
 
 public:	
 	// Called every frame

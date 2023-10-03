@@ -35,6 +35,13 @@ AARLCharacter::AARLCharacter()
 	
 }
 
+void AARLCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	AttributeComponent->OnHealthChanged.AddDynamic(this,&AARLCharacter::onHealthChanged);
+}
+
 // Called when the game starts or when spawned
 void AARLCharacter::BeginPlay()
 {
@@ -171,6 +178,17 @@ AActor* AARLCharacter::SpawnProjectile(FVector Endpos, FVector HandPos, TSubclas
 	
 	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(spawnClass, SpawnTransform, SpawnParameters);
 	return SpawnedActor;
+}
+
+void AARLCharacter::onHealthChanged(AActor* InstigatorActor, UARLAttributeComponent* OwninComp, float newHealth,
+	float delta)
+{
+	if (newHealth <= 0 && delta < 0)
+	{
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		DisableInput(PlayerController);
+		  
+	}
 }
 
 

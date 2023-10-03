@@ -13,6 +13,7 @@ class ACTIONROGUELIKE_API UARLAttributeComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+	
 protected:
 
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Attiributes")
@@ -24,6 +25,9 @@ public:
 	// Sets default values for this component's properties
 	UARLAttributeComponent();
 
+	UFUNCTION(BlueprintCallable)
+	bool IsAlive() const;
+	
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 	

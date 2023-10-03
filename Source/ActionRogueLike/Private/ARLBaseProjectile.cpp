@@ -3,6 +3,7 @@
 
 #include "ARLBaseProjectile.h"
 
+#include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -22,6 +23,9 @@ AARLBaseProjectile::AARLBaseProjectile()
 	EffectParticleSystemComp = CreateDefaultSubobject<UParticleSystemComponent>("ParticleSystemComponent");
 	EffectParticleSystemComp->SetupAttachment(SphereComp);
 
+	AudioComp = CreateDefaultSubobject<UAudioComponent>("AudioComp");
+	AudioComp->SetupAttachment(RootComponent);
+
 	ProjectileMovementComp = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComp");
 	ProjectileMovementComp->InitialSpeed = 8000;
 	ProjectileMovementComp->bRotationFollowsVelocity = true;
@@ -34,6 +38,13 @@ void AARLBaseProjectile::PostInitializeComponents()
 	Super::PostInitializeComponents();
 }
 
+void AARLBaseProjectile::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SphereComp->IgnoreActorWhenMoving(GetInstigator(),true);
+}
+
 
 void AARLBaseProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
@@ -42,9 +53,10 @@ void AARLBaseProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* O
 
 void AARLBaseProjectile::Explode_Implementation()
 {
-	if (ensure(!IsPendingKill()))
+	if (ensure(IsValid(this)))
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(this,ImpactVFX,GetActorLocation(),GetActorRotation());
+		UGameplayStatics::PlaySoundAtLocation(this,ImpactSound,GetActorLocation(),GetActorRotation());
 		Destroy();
 	}
 }

@@ -11,6 +11,11 @@ UCLASS()
 class ACTIONROGUELIKE_API AARLMagicProjectile : public AARLBaseProjectile
 {
 	GENERATED_BODY()
+
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	float DamageAmount;
+	
 	
 public:	
 	// Sets default values for this actor's properties
