@@ -8,8 +8,10 @@
 #include "ARLInteractionComponent.h"
 #include "ARLMagicProjectile.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GeometryCollection/GeometryCollectionSimulationTypes.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -180,13 +182,20 @@ AActor* AARLCharacter::SpawnProjectile(FVector Endpos, FVector HandPos, TSubclas
 	return SpawnedActor;
 }
 
-void AARLCharacter::onHealthChanged(AActor* InstigatorActor, UARLAttributeComponent* OwninComp, float newHealth,
-	float delta)
+void AARLCharacter::onHealthChanged(AActor* InstigatorActor, UARLAttributeComponent* OwninComp, float newHealth, float delta)
 {
+	if (delta < 0 )
+	{
+		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit",GetWorld()->TimeSeconds);
+		FVector MyColorVector = FVector(hitFlashColor.R,hitFlashColor.G,hitFlashColor.B);
+		GetMesh()->SetVectorParameterValueOnMaterials("HitFlashColor",MyColorVector);
+	}
+	
 	if (newHealth <= 0 && delta < 0)
 	{
 		APlayerController* PlayerController = Cast<APlayerController>(GetController());
 		DisableInput(PlayerController);
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		  
 	}
 }

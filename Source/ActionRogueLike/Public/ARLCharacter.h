@@ -12,7 +12,9 @@ class ACTIONROGUELIKE_API AARLCharacter : public ACharacter
 	GENERATED_BODY()
 
 protected:
-
+	UPROPERTY(EditAnywhere)
+	FLinearColor hitFlashColor;
+	
 	UPROPERTY(EditAnywhere,Category="Attack")
 	TSubclassOf<AActor> BlackHoleProjectileClass;
 	
