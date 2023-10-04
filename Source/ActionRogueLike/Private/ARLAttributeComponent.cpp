@@ -6,7 +6,13 @@
 // Sets default values for this component's properties
 UARLAttributeComponent::UARLAttributeComponent()
 {
-	Health = 100;
+	
+}
+
+void UARLAttributeComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	Health = MaxHealth;
 }
 
 bool UARLAttributeComponent::IsAlive() const
@@ -17,7 +23,9 @@ bool UARLAttributeComponent::IsAlive() const
 
 bool UARLAttributeComponent::ApplyHealthChange(float delta)
 {
+	UE_LOG(LogTemp, Warning, TEXT("healtchangeeedd"));
 	Health += delta;
+	Health = FMath::Clamp(Health,0.0f,MaxHealth);
 	OnHealthChanged.Broadcast(nullptr,this,Health,delta);
 	
 	return true;

@@ -16,14 +16,19 @@ class ACTIONROGUELIKE_API UARLAttributeComponent : public UActorComponent
 	
 protected:
 
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Attiributes")
-	float Health;
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="Attributes")
+	float Health{100};
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category="Attributes")
+	float MaxHealth{100};
 
 	//healthmax, stamina,strenth
 
 public:	
 	// Sets default values for this component's properties
 	UARLAttributeComponent();
+
+	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;
