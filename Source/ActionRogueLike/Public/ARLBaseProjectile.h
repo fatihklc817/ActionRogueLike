@@ -10,13 +10,18 @@ UCLASS(Abstract)
 class ACTIONROGUELIKE_API AARLBaseProjectile : public AActor
 {
 	GENERATED_BODY()
-
+public:
+	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category="Components")
+	class USphereComponent* SphereComp;
+	
 protected:
 	UPROPERTY(EditDefaultsOnly,Category="VFX")
 	UParticleSystem* ImpactVFX;
+
+	UPROPERTY(EditDefaultsOnly,Category="Camera")
+	TSubclassOf<UCameraShakeBase> cameraShakeclass;
 	
-	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category="Components")
-	class USphereComponent* SphereComp;
+	
 
 	UPROPERTY(VisibleAnywhere , BlueprintReadOnly , Category="Components")
 	class UProjectileMovementComponent* ProjectileMovementComp;

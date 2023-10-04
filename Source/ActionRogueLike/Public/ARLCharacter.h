@@ -28,6 +28,9 @@ protected:
 	UPROPERTY(EditAnywhere,Category="Attack")
 	UAnimMontage* PrimaryAttackAnim;
 
+	UPROPERTY(EditDefaultsOnly,Category="Attack")
+	UParticleSystem* muzzleParticle;
+
 	FTimerHandle TimerHandle_PrimaryAttack;
 	FTimerDelegate TimerDelegate_PrimaryAttack;
 

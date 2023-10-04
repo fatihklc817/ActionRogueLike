@@ -90,6 +90,7 @@ void AARLCharacter::PrimaryAttack_TimeElapsed(const FVector& EndPos)
 	FVector HandMuzzleSocketLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 	
 	SpawnProjectile(EndPos,HandMuzzleSocketLocation,PrimaryMagicProjectileClass);
+	UGameplayStatics::SpawnEmitterAttached(muzzleParticle,GetMesh(),"Muzzle_01");
 	
 }
 

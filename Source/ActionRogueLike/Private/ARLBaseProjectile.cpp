@@ -49,6 +49,7 @@ void AARLBaseProjectile::BeginPlay()
 void AARLBaseProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Explode();
+	
 }
 
 void AARLBaseProjectile::Explode_Implementation()
@@ -57,6 +58,7 @@ void AARLBaseProjectile::Explode_Implementation()
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(this,ImpactVFX,GetActorLocation(),GetActorRotation());
 		UGameplayStatics::PlaySoundAtLocation(this,ImpactSound,GetActorLocation(),GetActorRotation());
+		UGameplayStatics::PlayWorldCameraShake(GetWorld(),cameraShakeclass,GetActorLocation(),0,5000);
 		Destroy();
 	}
 }
