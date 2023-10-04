@@ -11,10 +11,11 @@ UCLASS()
 class ACTIONROGUELIKE_API AARLTargetDummy : public AActor
 {
 	GENERATED_BODY()
-protected:
-	UPROPERTY(VisibleAnywhere)
+public:
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	class UARLAttributeComponent* AttributeComponent;
 
+protected:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
 	
