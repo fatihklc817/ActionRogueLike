@@ -23,7 +23,7 @@ bool UARLAttributeComponent::IsAlive() const
 
 bool UARLAttributeComponent::ApplyHealthChange(float delta)
 {
-	UE_LOG(LogTemp, Warning, TEXT("healtchangeeedd"));
+	UE_LOG(LogTemp, Warning, TEXT("healtchangeeedd"));			//actual delta can be added (old health - new health )
 	Health += delta;
 	Health = FMath::Clamp(Health,0.0f,MaxHealth);
 	OnHealthChanged.Broadcast(nullptr,this,Health,delta);

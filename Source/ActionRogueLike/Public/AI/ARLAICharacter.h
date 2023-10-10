@@ -10,18 +10,21 @@ UCLASS()
 class ACTIONROGUELIKE_API AARLAICharacter : public ACharacter
 {
 	GENERATED_BODY()
+protected:
+	
+	UPROPERTY(VisibleAnywhere,Category="Components")
+	class UPawnSensingComponent* PawnSensingComp;
 
 public:
 	// Sets default values for this character's properties
 	AARLAICharacter();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual void PostInitializeComponents() override;
+
+	UFUNCTION()
+	void OnPawnSeen(APawn* Pawn);
 
 
 

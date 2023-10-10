@@ -3,27 +3,38 @@
 
 #include "AI/ARLAICharacter.h"
 
+#include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "Perception/PawnSensingComponent.h"
+
 // Sets default values
 AARLAICharacter::AARLAICharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	//PrimaryActorTick.bCanEverTick = true;
 
+	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
+	//PawnSensingComp->SetSensingUpdatesEnabled(true);
 }
 
-// Called when the game starts or when spawned
-void AARLAICharacter::BeginPlay()
+void AARLAICharacter::PostInitializeComponents()
 {
-	Super::BeginPlay();
-	
+	Super::PostInitializeComponents();
+	PawnSensingComp->OnSeePawn.AddDynamic(this,&AARLAICharacter::OnPawnSeen);
 }
 
-// Called every frame
-void AARLAICharacter::Tick(float DeltaTime)
+void AARLAICharacter::OnPawnSeen(APawn* Pawn)
 {
-	Super::Tick(DeltaTime);
+	AAIController* aiController = Cast<AAIController>(GetController());
+	if (aiController)
+	{
+		UBlackboardComponent* BlackboardComp = aiController->GetBlackboardComponent();
+		BlackboardComp->SetValueAsObject("TargetActor",Pawn);
 
+		DrawDebugString(GetWorld(),GetActorLocation(),"Player Spotted",nullptr,FColor::White,4,true);
+	}
 }
+
 
 
 
