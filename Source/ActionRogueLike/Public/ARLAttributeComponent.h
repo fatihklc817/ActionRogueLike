@@ -39,5 +39,8 @@ public:
 	UFUNCTION(BlueprintCallable,Category="Attiribute")
 	bool ApplyHealthChange(float delta);
 
+	UFUNCTION()
+	float GetHealthAndMaxHealth(float& getttedMaxHealth);
+
 	
 };

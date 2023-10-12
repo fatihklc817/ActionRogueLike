@@ -48,7 +48,11 @@ void AARLBaseProjectile::BeginPlay()
 
 void AARLBaseProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	Explode();
+	if(OtherActor != GetInstigator())
+	{
+		Explode();
+		
+	}
 	
 }
 

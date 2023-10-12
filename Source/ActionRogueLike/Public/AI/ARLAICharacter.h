@@ -10,6 +10,10 @@ UCLASS()
 class ACTIONROGUELIKE_API AARLAICharacter : public ACharacter
 {
 	GENERATED_BODY()
+public:
+	UPROPERTY(VisibleAnywhere,Category="Components")
+	class UARLAttributeComponent* AttributeComponent;
+	
 protected:
 	
 	UPROPERTY(VisibleAnywhere,Category="Components")

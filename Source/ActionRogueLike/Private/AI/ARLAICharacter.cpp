@@ -4,6 +4,7 @@
 #include "AI/ARLAICharacter.h"
 
 #include "AIController.h"
+#include "ARLAttributeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/PawnSensingComponent.h"
 
@@ -14,6 +15,8 @@ AARLAICharacter::AARLAICharacter()
 	//PrimaryActorTick.bCanEverTick = true;
 
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
+
+	AttributeComponent = CreateDefaultSubobject<UARLAttributeComponent>("AttributeComp");
 	//PawnSensingComp->SetSensingUpdatesEnabled(true);
 }
 

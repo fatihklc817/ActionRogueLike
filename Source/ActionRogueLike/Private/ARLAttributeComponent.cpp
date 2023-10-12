@@ -31,3 +31,9 @@ bool UARLAttributeComponent::ApplyHealthChange(float delta)
 	return true;
 }
 
+float UARLAttributeComponent::GetHealthAndMaxHealth(float& gettedMaxHealth)
+{
+	gettedMaxHealth = MaxHealth;
+	return  Health;
+}
+
