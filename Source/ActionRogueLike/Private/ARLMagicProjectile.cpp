@@ -48,6 +48,7 @@ void AARLMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponen
 void AARLMagicProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	// kod testing on the new keyboard hahahah selamun aleyküm agalar hoşgeldiniz
+	
 }
 
