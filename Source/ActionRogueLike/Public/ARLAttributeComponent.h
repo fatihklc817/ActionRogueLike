@@ -13,6 +13,8 @@ class ACTIONROGUELIKE_API UARLAttributeComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+
+	
 	
 protected:
 
@@ -24,11 +26,18 @@ protected:
 
 	//healthmax, stamina,strenth
 
-public:	
+public:
+	
 	// Sets default values for this component's properties
 	UARLAttributeComponent();
 
 	virtual void BeginPlay() override;
+	
+	UFUNCTION(BlueprintCallable, Category="Attributes")
+	static UARLAttributeComponent* GetAttributes(AActor* FromActor);
+
+	UFUNCTION(BlueprintCallable, Category="Attributes")
+	static bool IsActorAlive(AActor* Actor);
 
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;
@@ -37,7 +46,7 @@ public:
 	FOnHealthChanged OnHealthChanged;
 	
 	UFUNCTION(BlueprintCallable,Category="Attiribute")
-	bool ApplyHealthChange(float delta);
+	bool ApplyHealthChange(AActor* InstigatorActor ,float delta);
 
 	UFUNCTION()
 	float GetHealthAndMaxHealth(float& getttedMaxHealth);

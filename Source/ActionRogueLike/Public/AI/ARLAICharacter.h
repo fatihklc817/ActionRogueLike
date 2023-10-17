@@ -15,6 +15,9 @@ public:
 	class UARLAttributeComponent* AttributeComponent;
 	
 protected:
+
+	UPROPERTY(VisibleAnywhere,Category="Effects")
+	FName TimeToHitParameter;
 	
 	UPROPERTY(VisibleAnywhere,Category="Components")
 	class UPawnSensingComponent* PawnSensingComp;
@@ -30,6 +33,10 @@ protected:
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);
 
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, UARLAttributeComponent* OwninComp, float newHealth, float delta);
 
+	UFUNCTION()
+	void SetTargetActor(AActor* newTarget);
 
 };

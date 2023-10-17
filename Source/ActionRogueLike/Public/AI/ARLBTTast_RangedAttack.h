@@ -18,5 +18,14 @@ protected:
 	TSubclassOf<AActor> ProjectileClass;
 	
 protected:
+
+	UPROPERTY(EditAnywhere,Category="Ai")
+	float MaxBulletSpread;
+	
+public:
+	UARLBTTast_RangedAttack();
+	
+protected:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
 };

@@ -4,8 +4,14 @@
 #include "AI/ARLBTTast_RangedAttack.h"
 
 #include "AIController.h"
+#include "ARLAttributeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/Character.h"
+
+UARLBTTast_RangedAttack::UARLBTTast_RangedAttack()
+{
+	MaxBulletSpread = 2;
+}
 
 EBTNodeResult::Type UARLBTTast_RangedAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
@@ -27,8 +33,16 @@ EBTNodeResult::Type UARLBTTast_RangedAttack::ExecuteTask(UBehaviorTreeComponent&
 			 return EBTNodeResult::Failed;
 		 }
 
+		if(!UARLAttributeComponent::IsActorAlive(TargetActor))
+		{
+			return EBTNodeResult::Failed;
+		}
+		
 		FVector Direction = TargetActor->GetActorLocation() - MuzzleLocation;
 		FRotator MuzzleRotation = Direction.Rotation();
+
+		MuzzleRotation.Pitch += FMath::RandRange(0.0f,MaxBulletSpread);
+		MuzzleRotation.Yaw += FMath::RandRange(-MaxBulletSpread, MaxBulletSpread);
 
 		FActorSpawnParameters Params;
 		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;

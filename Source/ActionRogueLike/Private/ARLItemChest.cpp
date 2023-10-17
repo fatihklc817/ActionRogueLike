@@ -12,7 +12,7 @@ void AARLItemChest::Interact_Implementation(APawn* InstigatorPawn)
 AARLItemChest::AARLItemChest()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	//PrimaryActorTick.bCanEverTick = true;
 
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>("baseMesh");
 	RootComponent = BaseMesh;
@@ -24,17 +24,6 @@ AARLItemChest::AARLItemChest()
 
 }
 
-// Called when the game starts or when spawned
-void AARLItemChest::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
 
-// Called every frame
-void AARLItemChest::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 
-}
 

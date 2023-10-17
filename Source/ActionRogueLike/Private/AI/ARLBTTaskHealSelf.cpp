@@ -22,7 +22,7 @@ EBTNodeResult::Type UARLBTTaskHealSelf::ExecuteTask(UBehaviorTreeComponent& Owne
 			{
 				float MaxHealth;
 				float health = pawnsAttributeComp->GetHealthAndMaxHealth(MaxHealth);
-				pawnsAttributeComp->ApplyHealthChange(MaxHealth);
+				pawnsAttributeComp->ApplyHealthChange(myPawn, MaxHealth);
 				OwnerComp.GetBlackboardComponent()->SetValueAsBool(IsLowHealthKey.SelectedKeyName,false);
 				return EBTNodeResult::Succeeded;
 			}
