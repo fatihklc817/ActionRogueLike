@@ -16,6 +16,12 @@ public:
 	
 protected:
 
+	UPROPERTY()
+	class UARLWorldUserWidget* ActiveHealthBarWidget;
+	
+	UPROPERTY(EditDefaultsOnly, Category="ui")
+	TSubclassOf<UUserWidget> HealthBarWidgetClass;
+	
 	UPROPERTY(VisibleAnywhere,Category="Effects")
 	FName TimeToHitParameter;
 	

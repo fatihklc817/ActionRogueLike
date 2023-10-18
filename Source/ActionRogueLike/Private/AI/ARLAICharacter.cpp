@@ -5,8 +5,10 @@
 
 #include "AIController.h"
 #include "ARLAttributeComponent.h"
+#include "ARLWorldUserWidget.h"
 #include "BrainComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Blueprint/UserWidget.h"
 #include "Perception/PawnSensingComponent.h"
 
 // Sets default values
@@ -48,6 +50,17 @@ void AARLAICharacter::OnHealthChanged(AActor* InstigatorActor, UARLAttributeComp
 			SetTargetActor(InstigatorActor);
 		}
 
+		if (ActiveHealthBarWidget == nullptr)
+		{
+			ActiveHealthBarWidget = CreateWidget<UARLWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
+			if (ActiveHealthBarWidget)
+			{
+				ActiveHealthBarWidget->AttachedActor = this;
+				ActiveHealthBarWidget->WorldOffset = FVector(0,0,30);
+				ActiveHealthBarWidget->AddToViewport();
+			}
+		}
+	
 		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParameter,GetWorld()->TimeSeconds);
 		
 		if (newHealth <= 0)
