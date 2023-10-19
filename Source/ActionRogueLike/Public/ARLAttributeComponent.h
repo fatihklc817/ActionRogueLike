@@ -51,5 +51,8 @@ public:
 	UFUNCTION()
 	float GetHealthAndMaxHealth(float& getttedMaxHealth);
 
+	UFUNCTION(BlueprintCallable)
+	bool Kill(AActor* Instigator);
+
 	
 };

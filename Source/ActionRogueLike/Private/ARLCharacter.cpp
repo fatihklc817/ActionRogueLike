@@ -230,3 +230,8 @@ void AARLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 }
 
+void AARLCharacter::HealSelf(float amount /* =100 */)
+{
+	AttributeComponent->ApplyHealthChange(this,amount);
+}
+

@@ -43,6 +43,11 @@ bool UARLAttributeComponent::IsAlive() const
 
 bool UARLAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float delta)
 {
+	if (!GetOwner()->CanBeDamaged())
+	{
+		return false;
+	}
+	
 	//UE_LOG(LogTemp, Warning, TEXT("healtchangeeedd"));			//actual delta can be added (old health - new health )
 	float oldHealth = Health;
 	Health += delta;
@@ -57,5 +62,10 @@ float UARLAttributeComponent::GetHealthAndMaxHealth(float& gettedMaxHealth)
 {
 	gettedMaxHealth = MaxHealth;
 	return  Health;
+}
+
+bool UARLAttributeComponent::Kill(AActor* Instigator)
+{
+   return ApplyHealthChange(Instigator, -MaxHealth);
 }
 

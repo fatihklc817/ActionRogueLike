@@ -73,4 +73,17 @@ void AARLGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* Query
 	}
 }
 
+void AARLGameModeBase::KillAllBots()
+{
+	for (AARLAICharacter* bot : TActorRange<AARLAICharacter>(GetWorld()))
+	{
+		UARLAttributeComponent* AiAttributeComp =  bot->AttributeComponent;   // if use static class  = UARLAttributeComponent::GetAttributes(bot); 
+		if (ensure(AiAttributeComp) && AiAttributeComp->IsAlive())
+		{
+			AiAttributeComp->Kill(this); //  @fixme : pass in player for kill credits
+		}
+	}
+
+}
+
 
