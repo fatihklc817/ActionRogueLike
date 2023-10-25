@@ -15,20 +15,20 @@ AARLBasePickUp::AARLBasePickUp()
 
 void AARLBasePickUp::Interact_Implementation(APawn* InstigatorPawn)
 {
-	DisablePot();
+	DisablePickup();
 }
 
-void AARLBasePickUp::ReActivatePot()
+void AARLBasePickUp::ReActivatePickup()
 {
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	MeshComp->SetHiddenInGame(false);
 }
 
-void AARLBasePickUp::DisablePot()
+void AARLBasePickUp::DisablePickup()
 {
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	MeshComp->SetHiddenInGame(true);
-	GetWorldTimerManager().SetTimer(TimerHandle_PotActivate,this,&AARLBasePickUp::ReActivatePot,PotActivateSecond,false);
+	GetWorldTimerManager().SetTimer(TimerHandle_PickupActivate,this,&AARLBasePickUp::ReActivatePickup,PickupActivateSecond,false);
 }
 
 

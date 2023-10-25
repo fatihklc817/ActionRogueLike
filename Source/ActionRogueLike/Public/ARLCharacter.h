@@ -15,32 +15,6 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FLinearColor hitFlashColor;
 	
-	UPROPERTY(EditAnywhere,Category="Attack")
-	TSubclassOf<AActor> BlackHoleProjectileClass;
-	
-	UPROPERTY(EditAnywhere,Category="Attack")
-	TSubclassOf<AActor> PrimaryMagicProjectileClass;
-
-	UPROPERTY(EditAnywhere,Category="Attack")
-	TSubclassOf<AActor> TeleportProjectileClass;
-	
-
-	UPROPERTY(EditAnywhere,Category="Attack")
-	UAnimMontage* PrimaryAttackAnim;
-
-	UPROPERTY(EditDefaultsOnly,Category="Attack")
-	UParticleSystem* muzzleParticle;
-
-	FTimerHandle TimerHandle_PrimaryAttack;
-	FTimerDelegate TimerDelegate_PrimaryAttack;
-
-	FTimerHandle TimerHandle_SKillE;
-	FTimerDelegate TimerDelegate_SkillE;
-
-	FTimerHandle TimerHandle_BlackholeSkill;
-	FTimerDelegate TimerDelegate_BlackHoleSkill;
-
-	
 	UPROPERTY(VisibleAnywhere)
 	class USpringArmComponent* SpringArmComp;
 
@@ -55,16 +29,20 @@ public:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly , Category="Components")
 	class UARLAttributeComponent* AttributeComponent;
 
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category="Components")
+	class UARLActionComponent* ActionComponent;
+
 	
 	
 public:
-	// Sets default values for this character's properties
+	
 	AARLCharacter();
 
 protected:
 
 	virtual void PostInitializeComponents() override;
-	// Called when the game starts or when spawned
+	
+	
 	virtual void BeginPlay() override;
 
 
@@ -73,36 +51,27 @@ protected:
 	void MoveRight(float value);
 
 	void PrimaryAttack();
-
-	UFUNCTION()
-	void PrimaryAttack_TimeElapsed(const FVector& EndPos);
-
+	
 	UFUNCTION()
 	void PrimaryInteract();
 
 	UFUNCTION()
 	void BlackholeSkill();
-
-	UFUNCTION()
-	void BlackholeSkill_TimeElapsed(const FVector& Endpos);
-
+	
 	UFUNCTION()
 	void SkillE();
+	
+	UFUNCTION()
+	void SprintStart();
 
 	UFUNCTION()
-	void SkillE_TimeElapsed(const FVector& EndPos);
-
-	// UFUNCTION()
-	// void SkillE_Arrived(AActor* SpawnedActor);
-
-	UFUNCTION()
-	bool RayFromCamera(FVector &EndTrace);
-
-	UFUNCTION()
-	AActor* SpawnProjectile(FVector Endpos, FVector HandPos , TSubclassOf<AActor> spawnClass);
-
+	void SprintStop();
+	
 	UFUNCTION()
 	void onHealthChanged(AActor* InstigatorActor, UARLAttributeComponent* OwninComp, float newHealth, float delta);
+
+	UFUNCTION()
+	virtual FVector GetPawnViewLocation() const override;
 	
 
 public:	
@@ -116,3 +85,4 @@ public:
 	void HealSelf(float amount = 100);
 
 };
+

@@ -9,6 +9,8 @@
 #include "BrainComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
 
 // Sets default values
@@ -22,6 +24,8 @@ AARLAICharacter::AARLAICharacter()
 
 	AttributeComponent = CreateDefaultSubobject<UARLAttributeComponent>("AttributeComp");
 	//PawnSensingComp->SetSensingUpdatesEnabled(true);
+
+	GetMesh()->SetGenerateOverlapEvents(true);
 
 	TimeToHitParameter = "TimeToHit";
 }
@@ -75,7 +79,9 @@ void AARLAICharacter::OnHealthChanged(AActor* InstigatorActor, UARLAttributeComp
 			//ragdoll
 			GetMesh()->SetAllBodiesSimulatePhysics(true);
 			GetMesh()->SetCollisionProfileName("Ragdoll");
-			
+
+			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			GetCharacterMovement()->DisableMovement();
 
 			
 			//set lifespawn

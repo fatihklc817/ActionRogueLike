@@ -5,6 +5,7 @@
 
 #include "ARLAttributeComponent.h"
 #include "ARLCharacter.h"
+#include "ARLGameplayFunctionLibrary.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -34,10 +35,15 @@ void AARLMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponen
 	if (ensure(OtherActor) && OtherActor != gettedInstigator)
 	{
 		
-		UARLAttributeComponent* otherActorAttributeComp = Cast<UARLAttributeComponent>(OtherActor->GetComponentByClass(UARLAttributeComponent::StaticClass()));	
-		if (otherActorAttributeComp)
+		// UARLAttributeComponent* otherActorAttributeComp = Cast<UARLAttributeComponent>(OtherActor->GetComponentByClass(UARLAttributeComponent::StaticClass()));	
+		// if (otherActorAttributeComp)
+		// {
+		// 	otherActorAttributeComp->ApplyHealthChange(gettedInstigator ,-DamageAmount);
+		// 	Explode();
+		// }
+
+	if(UARLGameplayFunctionLibrary::ApplyDirectionalDamage(gettedInstigator,OtherActor,DamageAmount,SweepResult))
 		{
-			otherActorAttributeComp->ApplyHealthChange(gettedInstigator ,-DamageAmount);
 			Explode();
 		}
 	}

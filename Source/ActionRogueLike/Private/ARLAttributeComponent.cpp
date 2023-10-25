@@ -3,6 +3,11 @@
 
 #include "ARLAttributeComponent.h"
 
+#include "ARLGameModeBase.h"
+
+
+static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("arlu.DamageMultiplier"),1,TEXT("Global damage multiplier for attribute comp"),ECVF_Cheat);
+
 
 // Sets default values for this component's properties
 UARLAttributeComponent::UARLAttributeComponent()
@@ -43,9 +48,15 @@ bool UARLAttributeComponent::IsAlive() const
 
 bool UARLAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float delta)
 {
-	if (!GetOwner()->CanBeDamaged())
+	if (!GetOwner()->CanBeDamaged() && delta < 0)
 	{
 		return false;
+	}
+	
+	if (delta < 0)
+	{
+		float DamageMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
+		delta*= DamageMultiplier;
 	}
 	
 	//UE_LOG(LogTemp, Warning, TEXT("healtchangeeedd"));			//actual delta can be added (old health - new health )
@@ -54,6 +65,16 @@ bool UARLAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float de
 	Health = FMath::Clamp(Health,0.0f,MaxHealth);
 	float actualDelta = Health - oldHealth;
 	OnHealthChanged.Broadcast(InstigatorActor,this,Health,actualDelta);
+
+	//died
+	if (actualDelta < 0 && Health == 0)
+	{
+		AARLGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AARLGameModeBase>();
+		if (GameMode)
+		{
+			GameMode->OnActorKilled(GetOwner(), InstigatorActor);
+		}
+	}
 	
 	return actualDelta != 0;
 }

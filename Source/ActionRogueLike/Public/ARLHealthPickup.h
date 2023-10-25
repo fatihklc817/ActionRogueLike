@@ -19,6 +19,8 @@ protected:
 	UPROPERTY(EditAnywhere,Category="HealthPot")
 	float HealthRegenAmount;
 
+	UPROPERTY(EditAnywhere,Category="HealthPot")
+	float CreditsAmountToActivate{50};
 
 public:
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;

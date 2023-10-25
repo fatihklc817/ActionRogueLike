@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnvironmentQuery/EnvQueryManager.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"
 #include "GameFramework/GameModeBase.h"
 #include "ARLGameModeBase.generated.h"
@@ -24,16 +25,33 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="ai")
 	class UEnvQuery* SpawnBotQuery;
 
+	UPROPERTY(EditDefaultsOnly,Category="pickup")
+	UEnvQuery* SpawnPickupQuery;
+	UPROPERTY()
+	FEnvQueryRequest SpawnPickupQueryRequest;
+	
+	
 	UPROPERTY(EditDefaultsOnly,Category="ai")
 	TSubclassOf<AActor> MinionClass;
 
+	UPROPERTY(EditDefaultsOnly,Category="pickup")
+	TSubclassOf<AActor> HealthPickupClass;
+	
+	UPROPERTY(EditDefaultsOnly,Category="pickup")
+	TSubclassOf<AActor> CreditCoinPickupClass;
+	
+
 	UPROPERTY(EditDefaultsOnly, Category="ai")
 	UCurveFloat* DifficultyCurve;
+
+
 	
 public:
 	AARLGameModeBase();
 	
 	virtual void StartPlay() override;
+
+	virtual void OnActorKilled(AActor* VictimActor,AActor* Killer);
 	
 protected:
 	
@@ -41,8 +59,22 @@ protected:
 	void SpawnBotTimerElapsed();
 
 	UFUNCTION()
-	void OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+	void OnSpawnBotQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 
 	UFUNCTION(Exec)
 	void KillAllBots();
+
+	UFUNCTION()
+	void RespawnPlayerTimeElapsed(AController* controller);
+
+	UFUNCTION()
+	void SpawnHealthPickup();
+
+	UFUNCTION()
+	void SpawnCrediCoinPickup();
+	
+	void OnSpawnHealthPickupQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
+
+	void OnSpawnCreditCoinPickupQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
+	
 };

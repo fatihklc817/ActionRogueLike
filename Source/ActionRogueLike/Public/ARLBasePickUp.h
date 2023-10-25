@@ -17,9 +17,9 @@ protected:
 	UStaticMeshComponent* MeshComp;
 
 	UPROPERTY(EditAnywhere)
-	float PotActivateSecond;
+	float PickupActivateSecond{10};
 	
-	FTimerHandle TimerHandle_PotActivate;
+	FTimerHandle TimerHandle_PickupActivate;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -28,6 +28,6 @@ public:
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 
 protected:
-	virtual void ReActivatePot();
-	virtual void DisablePot();
+	virtual void ReActivatePickup();
+	virtual void DisablePickup();
 };

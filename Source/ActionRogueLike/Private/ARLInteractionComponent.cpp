@@ -5,6 +5,8 @@
 
 #include "ARLGameplayInterface.h"
 
+static TAutoConsoleVariable<bool> CVarDebugDrawInteraction(TEXT("arlu.InteractionDebugDraw"),false,TEXT("Enable debug lines for interact component"),ECVF_Cheat);
+
 // Sets default values for this component's properties
 UARLInteractionComponent::UARLInteractionComponent()
 {
@@ -36,6 +38,9 @@ void UARLInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 void UARLInteractionComponent::PrimaryInteract()
 {
+
+	bool bDebugDraw = CVarDebugDrawInteraction.GetValueOnGameThread();
+	
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
@@ -62,6 +67,12 @@ void UARLInteractionComponent::PrimaryInteract()
 	
 	for (FHitResult HitResult : HitResults)
 	{
+		if (bDebugDraw)
+		{
+			DrawDebugSphere(GetWorld(),HitResult.ImpactPoint,Radius,16,LineColor,false,2);
+			
+		}
+		
 		if (AActor* HitActor = HitResult.GetActor())
 		{
 			if (HitActor->Implements<UARLGameplayInterface>())
@@ -72,10 +83,12 @@ void UARLInteractionComponent::PrimaryInteract()
 			}
 		
 		}
-		DrawDebugSphere(GetWorld(),HitResult.ImpactPoint,Radius,16,LineColor,false,2);
+		
 	}
-	
 
-	
-	DrawDebugLine(GetWorld(),EyeLocation,EndPos,LineColor,false,2);
+
+	if (bDebugDraw)
+	{
+		DrawDebugLine(GetWorld(),EyeLocation,EndPos,LineColor,false,2);
+	}
 }
