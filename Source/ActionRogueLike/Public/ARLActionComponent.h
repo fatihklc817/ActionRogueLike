@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
 #include "ARLActionComponent.generated.h"
 
@@ -11,7 +12,10 @@ UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ACTIONROGUELIKE_API UARLActionComponent : public UActorComponent
 {
 	GENERATED_BODY()
-
+public:
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Tags")
+	FGameplayTagContainer ActiveGameplayTags;
+	
 protected:
 	UPROPERTY()
 	TArray<class UARLAction*> Actions;

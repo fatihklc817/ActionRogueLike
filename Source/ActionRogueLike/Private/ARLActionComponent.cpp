@@ -25,6 +25,9 @@ void UARLActionComponent::BeginPlay()
 void UARLActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	FString Debugmsg = GetNameSafe(GetOwner()) + ":" + ActiveGameplayTags.ToStringSimple();
+	GEngine -> AddOnScreenDebugMessage(-1,0,FColor::White,Debugmsg);
 }
 
 void UARLActionComponent::AddAction(TSubclassOf<UARLAction> ActionClass)
@@ -47,6 +50,12 @@ bool UARLActionComponent::StartActionByName(AActor* Instigator, FName ActionName
 	{
 		if (action && action->ActionName == ActionName)
 		{
+			if (!action->CanStart(Instigator))
+			{
+				FString FailedMSg = FString::Printf(TEXT("failed to Run %s"),*ActionName.ToString());
+				GEngine->AddOnScreenDebugMessage(-1,2,FColor::Red,FailedMSg);
+				continue;
+			}
 			action->StartAction(Instigator);
 			return true;
 		}
@@ -60,8 +69,11 @@ bool UARLActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 	{
 		if (action && action->ActionName == ActionName)
 		{
-			action->StopAction(Instigator);
-			return true;
+			if (action->GetIsRunning())
+			{
+				action->StopAction(Instigator);
+				return true;
+			}
 		}
 	}
 	return false;

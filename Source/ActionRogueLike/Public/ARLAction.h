@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "UObject/NoExportTypes.h"
 #include "ARLAction.generated.h"
 
@@ -18,7 +19,19 @@ public:
 	UPROPERTY(EditDefaultsOnly,Category="Action")
 	FName ActionName;
 
+protected:
+	UPROPERTY(EditDefaultsOnly,Category="Tags")
+	FGameplayTagContainer GrantsTags;
+	
+	UPROPERTY(EditDefaultsOnly,Category="Tags")
+	FGameplayTagContainer BlockedTags;
+
+	bool bIsRunning;
+	
 public:
+	UFUNCTION(BlueprintNativeEvent,Category="Action")
+	bool CanStart(AActor* Instigator);
+	
 	UFUNCTION(BlueprintNativeEvent,Category="Action")
 	void StartAction(AActor* Instigator);
 
@@ -26,4 +39,11 @@ public:
 	void StopAction(AActor* Instigator);
 
 	virtual UWorld* GetWorld() const override;
+
+	UFUNCTION(BlueprintCallable,Category="Action")
+	bool GetIsRunning()const;
+
+protected:
+	UFUNCTION(BlueprintCallable,Category="Action")
+	class UARLActionComponent* GetOwningComponent() const ; 
 };
