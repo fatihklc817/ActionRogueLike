@@ -28,6 +28,9 @@ protected:
 	UPROPERTY(VisibleAnywhere,Category="Components")
 	class UPawnSensingComponent* PawnSensingComp;
 
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="Components")
+	class UARLActionComponent* ActionComponent;
+
 public:
 	// Sets default values for this character's properties
 	AARLAICharacter();

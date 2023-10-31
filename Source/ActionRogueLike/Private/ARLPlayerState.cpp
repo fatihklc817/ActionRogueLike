@@ -10,7 +10,7 @@ float AARLPlayerState::GetCredits()
 
 void AARLPlayerState::AddCredits(float delta)
 {
-	Credits += delta;
+	Credits += delta;									//@fixme : check if < 0   // could return bool 
 	OnCreditsChanged.Broadcast(Credits,delta);
 	//UE_LOG(LogTemp, Warning, TEXT("Credit added in PLAYERSTATEEEE"));
 	
@@ -18,6 +18,6 @@ void AARLPlayerState::AddCredits(float delta)
 
 void AARLPlayerState::RemoveCredits(float delta)
 {
-	Credits-= delta;
+	Credits-= delta;                                 //@fixme : check if < 0 and credits < delta 
 	OnCreditsChanged.Broadcast(Credits,delta);
 }

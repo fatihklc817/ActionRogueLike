@@ -4,6 +4,7 @@
 #include "AI/ARLAICharacter.h"
 
 #include "AIController.h"
+#include "ARLActionComponent.h"
 #include "ARLAttributeComponent.h"
 #include "ARLWorldUserWidget.h"
 #include "BrainComponent.h"
@@ -25,6 +26,8 @@ AARLAICharacter::AARLAICharacter()
 	AttributeComponent = CreateDefaultSubobject<UARLAttributeComponent>("AttributeComp");
 	//PawnSensingComp->SetSensingUpdatesEnabled(true);
 
+	ActionComponent = CreateDefaultSubobject<UARLActionComponent>("ActionComp");
+	
 	GetMesh()->SetGenerateOverlapEvents(true);
 
 	TimeToHitParameter = "TimeToHit";
@@ -60,7 +63,7 @@ void AARLAICharacter::OnHealthChanged(AActor* InstigatorActor, UARLAttributeComp
 			if (ActiveHealthBarWidget)
 			{
 				ActiveHealthBarWidget->AttachedActor = this;
-				ActiveHealthBarWidget->WorldOffset = FVector(0,0,30);
+				//ActiveHealthBarWidget->WorldOffset = FVector(0,0,30);  //I sette world offset from bp
 				ActiveHealthBarWidget->AddToViewport();
 			}
 		}

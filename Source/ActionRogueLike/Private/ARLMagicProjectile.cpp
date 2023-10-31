@@ -3,6 +3,7 @@
 
 #include "ARLMagicProjectile.h"
 
+#include "ARLActionComponent.h"
 #include "ARLAttributeComponent.h"
 #include "ARLCharacter.h"
 #include "ARLGameplayFunctionLibrary.h"
@@ -35,17 +36,20 @@ void AARLMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponen
 	if (ensure(OtherActor) && OtherActor != gettedInstigator)
 	{
 		
-		// UARLAttributeComponent* otherActorAttributeComp = Cast<UARLAttributeComponent>(OtherActor->GetComponentByClass(UARLAttributeComponent::StaticClass()));	
-		// if (otherActorAttributeComp)
-		// {
-		// 	otherActorAttributeComp->ApplyHealthChange(gettedInstigator ,-DamageAmount);
-		// 	Explode();
-		// }
+		UARLActionComponent* ActionComp = Cast<UARLActionComponent>(OtherActor->GetComponentByClass(UARLActionComponent::StaticClass())); //other is character in the scenario 
+		if (ActionComp && ActionComp->ActiveGameplayTags.HasTag(ParryTag))
+		{
+			ProjectileMovementComp->Velocity = -ProjectileMovementComp->Velocity;
 
-	if(UARLGameplayFunctionLibrary::ApplyDirectionalDamage(gettedInstigator,OtherActor,DamageAmount,SweepResult))
+			SetInstigator(Cast<APawn>(OtherActor));
+			return;
+		}
+
+		if(UARLGameplayFunctionLibrary::ApplyDirectionalDamage(gettedInstigator,OtherActor,DamageAmount,SweepResult))
 		{
 			Explode();
 		}
+		
 	}
 	
 }

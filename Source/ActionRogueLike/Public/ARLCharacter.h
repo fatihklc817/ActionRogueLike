@@ -72,6 +72,8 @@ protected:
 
 	UFUNCTION()
 	virtual FVector GetPawnViewLocation() const override;
+
+	
 	
 
 public:	
@@ -84,5 +86,7 @@ public:
 	UFUNCTION(Exec)
 	void HealSelf(float amount = 100);
 
+	UFUNCTION()
+	UARLActionComponent* GetActionComponent();
 };
 

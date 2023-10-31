@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ARLBaseProjectile.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/Actor.h"
 #include "ARLMagicProjectile.generated.h"
 
@@ -13,8 +14,11 @@ class ACTIONROGUELIKE_API AARLMagicProjectile : public AARLBaseProjectile
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly,Category="Damage")
 	float DamageAmount;
+
+	UPROPERTY(EditDefaultsOnly,Category="Damage")
+	FGameplayTag ParryTag;
 	
 	
 public:	

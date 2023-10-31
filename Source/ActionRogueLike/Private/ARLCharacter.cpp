@@ -138,6 +138,11 @@ FVector AARLCharacter::GetPawnViewLocation() const
 	return CameraComp->GetComponentLocation();
 }
 
+UARLActionComponent* AARLCharacter::GetActionComponent()
+{
+	return ActionComponent;
+}
+
 
 // Called every frame
 void AARLCharacter::Tick(float DeltaTime)

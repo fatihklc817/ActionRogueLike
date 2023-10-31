@@ -26,7 +26,14 @@ protected:
 	class UEnvQuery* SpawnBotQuery;
 
 	UPROPERTY(EditDefaultsOnly,Category="pickup")
+	float DesiredPickupCount;
+
+	UPROPERTY(EditDefaultsOnly,Category="pickup")
+	float MinPickupDistance;
+
+	UPROPERTY(EditDefaultsOnly,Category="pickup")
 	UEnvQuery* SpawnPickupQuery;
+	
 	UPROPERTY()
 	FEnvQueryRequest SpawnPickupQueryRequest;
 	
@@ -35,10 +42,13 @@ protected:
 	TSubclassOf<AActor> MinionClass;
 
 	UPROPERTY(EditDefaultsOnly,Category="pickup")
-	TSubclassOf<AActor> HealthPickupClass;
+	TArray<TSubclassOf<AActor>> PickupClasses;
 	
-	UPROPERTY(EditDefaultsOnly,Category="pickup")
-	TSubclassOf<AActor> CreditCoinPickupClass;
+	// UPROPERTY(EditDefaultsOnly,Category="pickup")
+	// TSubclassOf<AActor> HealthPickupClass;
+	//
+	// UPROPERTY(EditDefaultsOnly,Category="pickup")
+	// TSubclassOf<AActor> CreditCoinPickupClass;
 	
 
 	UPROPERTY(EditDefaultsOnly, Category="ai")
@@ -68,13 +78,13 @@ protected:
 	void RespawnPlayerTimeElapsed(AController* controller);
 
 	UFUNCTION()
-	void SpawnHealthPickup();
+	void SpawnPickups();
 
-	UFUNCTION()
-	void SpawnCrediCoinPickup();
+	//UFUNCTION()
+	//void SpawnCrediCoinPickup();
 	
-	void OnSpawnHealthPickupQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
+	void OnSpawnPickupsQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
 
-	void OnSpawnCreditCoinPickupQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
+	//void OnSpawnCreditCoinPickupQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
 	
 };

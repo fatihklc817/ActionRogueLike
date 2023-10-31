@@ -24,16 +24,9 @@ void AARLGameModeBase::StartPlay()
 
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots,this,&AARLGameModeBase::SpawnBotTimerElapsed,SpawnTimerInterval,true);
 
-	SpawnPickupQueryRequest = FEnvQueryRequest(SpawnBotQuery,this);
+	SpawnPickupQueryRequest = FEnvQueryRequest(SpawnPickupQuery,this);
 
-	for (int i = 0; i < 10; ++i)
-	{
-		SpawnHealthPickup();
-	}
-	for (int i = 0; i < 10; ++i)
-	{
-		SpawnCrediCoinPickup();
-	}
+	SpawnPickups();
 }
 
 
@@ -149,35 +142,76 @@ void AARLGameModeBase::RespawnPlayerTimeElapsed(AController* controller)
 }
 
 
-void AARLGameModeBase::SpawnHealthPickup()
+void AARLGameModeBase::SpawnPickups()
 {
-	SpawnPickupQueryRequest.Execute(EEnvQueryRunMode::AllMatching, this, &AARLGameModeBase::OnSpawnHealthPickupQueryCompleted);
+	SpawnPickupQueryRequest.Execute(EEnvQueryRunMode::AllMatching, this, &AARLGameModeBase::OnSpawnPickupsQueryCompleted);
 }
 
-void AARLGameModeBase::SpawnCrediCoinPickup()
-{
-	SpawnPickupQueryRequest.Execute(EEnvQueryRunMode::RandomBest25Pct,this, &AARLGameModeBase::OnSpawnCreditCoinPickupQueryCompleted);
-}
 
-void AARLGameModeBase::OnSpawnHealthPickupQueryCompleted(TSharedPtr<FEnvQueryResult> Result)
+void AARLGameModeBase::OnSpawnPickupsQueryCompleted(TSharedPtr<FEnvQueryResult> Result)
 {
+	if (!Result->IsSuccessful())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("spawn pickup eqs failed"));
+		return;
+	}
+	
 	TArray<FVector> locations;
     Result->GetAllAsLocations(locations);
-	FVector randLocation = locations[FMath::RandRange(0,locations.Num()-1)];
-	FVector SpawnLocationFixed = FVector(randLocation.X,randLocation.Y,75);
-	GetWorld()->SpawnActor<AActor>(HealthPickupClass,SpawnLocationFixed,FRotator::ZeroRotator);
-	UE_LOG(LogTemp, Warning, TEXT("RANDOM Healthhh PİCKJUPPP SPAWNEDDDDDDDDDDDDDDDDDDDDDDDD"));
+	TArray<FVector> usedLocations;
+
+	int32 spawnCounter = 0;
+	while ( spawnCounter <DesiredPickupCount && locations.Num() > 0)
+	{
+		int randIndex = FMath::RandRange(0,locations.Num()-1);
+		FVector pickedLocation = locations[randIndex];
+		locations.RemoveAt(randIndex); // to not choose again
+
+		bool bValidLocation = true;
+		for (FVector OtherLocation : usedLocations)
+		{
+			float distanceTo = (pickedLocation-OtherLocation).Size();
+
+			if (distanceTo < MinPickupDistance)
+			{
+				bValidLocation = false;
+				break;
+			}
+			
+		}
+
+		if (!bValidLocation)
+		{
+			continue;
+		}
+
+		int32 RandomClassIndex = FMath::RandRange(0,PickupClasses.Num()-1);
+		TSubclassOf<AActor> RandomPickUpClass = PickupClasses[RandomClassIndex];
+		FVector SpawnLocationFixed = FVector(pickedLocation.X,pickedLocation.Y,75);
+		GetWorld()->SpawnActor<AActor>(RandomPickUpClass,SpawnLocationFixed,FRotator::ZeroRotator);
+		UE_LOG(LogTemp, Warning, TEXT("RANDOM Healthhh PİCKJUPPP SPAWNEDDDDDDDDDDDDDDDDDDDDDDDD"));
+		spawnCounter++;
+	}
+	
 }
 
-void AARLGameModeBase::OnSpawnCreditCoinPickupQueryCompleted(TSharedPtr<FEnvQueryResult> Result)
-{
-	TArray<FVector> locations;
-	Result->GetAllAsLocations(locations);
-	FVector randLocation = locations[FMath::RandRange(0,locations.Num()-1)];
-	FVector SpawnLocationFixed = FVector(randLocation.X,randLocation.Y,75);
-	GetWorld()->SpawnActor<AActor>(CreditCoinPickupClass,SpawnLocationFixed,FRotator::ZeroRotator);
-	UE_LOG(LogTemp, Warning, TEXT("RANDOM COİNNNNN  PİCKJUPPP SPAWNEDDDDDDDDDDDDDDDDDDDDDDDD"));
 
-	//@fixme add distance to other pickups check in the eqs !! 
-}
+
+// void AARLGameModeBase::SpawnCrediCoinPickup()
+// {
+// 	SpawnPickupQueryRequest.Execute(EEnvQueryRunMode::AllMatching,this, &AARLGameModeBase::OnSpawnCreditCoinPickupQueryCompleted);
+// }
+
+
+// void AARLGameModeBase::OnSpawnCreditCoinPickupQueryCompleted(TSharedPtr<FEnvQueryResult> Result)
+// {
+// 	TArray<FVector> locations;
+// 	Result->GetAllAsLocations(locations);
+// 	FVector randLocation = locations[FMath::RandRange(0,locations.Num()-1)];
+// 	FVector SpawnLocationFixed = FVector(randLocation.X,randLocation.Y,75);
+// 	GetWorld()->SpawnActor<AActor>(CreditCoinPickupClass,SpawnLocationFixed,FRotator::ZeroRotator);
+// 	UE_LOG(LogTemp, Warning, TEXT("RANDOM COİNNNNN  PİCKJUPPP SPAWNEDDDDDDDDDDDDDDDDDDDDDDDD"));
+//
+// 	//@fixme add distance to other pickups check in the eqs !! 
+// }
 
