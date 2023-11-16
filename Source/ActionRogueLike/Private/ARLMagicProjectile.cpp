@@ -10,6 +10,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "ARLActionEffect.h"
 
 // Sets default values
 AARLMagicProjectile::AARLMagicProjectile()
@@ -48,6 +49,10 @@ void AARLMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponen
 		if(UARLGameplayFunctionLibrary::ApplyDirectionalDamage(gettedInstigator,OtherActor,DamageAmount,SweepResult))
 		{
 			Explode();
+			if (ActionComp)
+			{
+				ActionComp->AddAction(gettedInstigator, BurningActionClass);
+			}
 		}
 		
 	}

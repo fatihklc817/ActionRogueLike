@@ -36,13 +36,15 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable, Category="Actions")
-	void AddAction(TSubclassOf<UARLAction> ActionClass);
+	void AddAction(AActor* Instigator, TSubclassOf<UARLAction> ActionClass);
 
+	UFUNCTION(BlueprintCallable,Category="Actions")
+	void RemoveAction(UARLAction* ActionToRemove);
+	
 	UFUNCTION(BlueprintCallable, Category="Actions")
 	bool StartActionByName(AActor* Instigator,FName ActionName);
 
 	UFUNCTION(BlueprintCallable, Category="Actions")
 	bool StopActionByName(AActor* Instigator,FName ActionName);
-	
 	
 };

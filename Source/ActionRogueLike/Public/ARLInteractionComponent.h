@@ -12,20 +12,38 @@ class ACTIONROGUELIKE_API UARLInteractionComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
-	// Sets default values for this component's properties
+protected:
+	UPROPERTY()
+	AActor* FocusedActor;
+
+	UPROPERTY(EditDefaultsOnly,Category="ui")
+	TSubclassOf<class UARLWorldUserWidget> DefaultWidgetClass;
+
+	UPROPERTY()
+	UARLWorldUserWidget* DefaultWidgetInstance;
+	
+	UPROPERTY(EditDefaultsOnly,Category="trace")
+	float TraceDistance;
+
+	UPROPERTY(EditDefaultsOnly,Category="trace")
+	float TraceRadius;
+
+	UPROPERTY(EditDefaultsOnly,Category="trace")
+	TEnumAsByte<ECollisionChannel> CollisionChannel;
+	
+public:
 	UARLInteractionComponent();
+	
+protected:
+	virtual void BeginPlay() override;
+
+public:	
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION()
 	void PrimaryInteract();
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void FindBestInteractable();
 
 		
 };

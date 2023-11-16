@@ -17,7 +17,7 @@ void UARLActionComponent::BeginPlay()
 	Super::BeginPlay();
 	for(TSubclassOf<UARLAction> actionClass :DefaultActions)
 	{
-		AddAction(actionClass);
+		AddAction(GetOwner(), actionClass);
 	}
 }
 
@@ -30,7 +30,7 @@ void UARLActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	GEngine -> AddOnScreenDebugMessage(-1,0,FColor::White,Debugmsg);
 }
 
-void UARLActionComponent::AddAction(TSubclassOf<UARLAction> ActionClass)
+void UARLActionComponent::AddAction(AActor* Instigator, TSubclassOf<UARLAction> ActionClass)
 {
 	if (!ensure(ActionClass))
 	{
@@ -41,7 +41,22 @@ void UARLActionComponent::AddAction(TSubclassOf<UARLAction> ActionClass)
 	if (ensure(NewAction))
 	{
 		Actions.Add(NewAction);
+		if (NewAction -> bAutoStart && ensure(NewAction->CanStart(Instigator)))
+		{
+			NewAction->StartAction(Instigator);
+		}
 	}
+}
+
+void UARLActionComponent::RemoveAction(UARLAction* ActionToRemove)
+{
+	if (ensure(ActionToRemove && !ActionToRemove->GetIsRunning()))
+	{
+		return;
+	}
+
+	Actions.Remove(ActionToRemove);
+	
 }
 
 bool UARLActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
