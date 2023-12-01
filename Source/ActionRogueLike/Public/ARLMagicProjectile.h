@@ -21,6 +21,9 @@ protected:
 	FGameplayTag ParryTag;
 
 	UPROPERTY(EditDefaultsOnly,Category="Damage")
+	FGameplayTag ThornTag;
+
+	UPROPERTY(EditDefaultsOnly,Category="Damage")
 	TSubclassOf<class UARLActionEffect> BurningActionClass;
 	
 	

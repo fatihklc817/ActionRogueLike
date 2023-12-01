@@ -14,8 +14,7 @@ void UARLActionEffect::StartAction_Implementation(AActor* Instigator)
 {
 	Super::StartAction_Implementation(Instigator);
 	if (Duration > 0)
-	{
-		FTimerDelegate delegate;
+	{		FTimerDelegate delegate;
 		delegate.BindUFunction(this,"StopAction",Instigator);
 
 		GetWorld()->GetTimerManager().SetTimer(DurationHandle,delegate,Duration,false);

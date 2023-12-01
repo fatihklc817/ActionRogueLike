@@ -90,3 +90,19 @@ bool UARLAttributeComponent::Kill(AActor* Instigator)
    return ApplyHealthChange(Instigator, -MaxHealth);
 }
 
+bool UARLAttributeComponent::ChangeRageValue(AActor* InstigatorActor, float delta)
+{
+	float oldRage = Rage;
+	Rage += delta;
+	Rage = FMath::Clamp(Rage,0.0f,MaxRage);
+	float actualDelta = Rage - oldRage;
+	OnRageChanged.Broadcast(InstigatorActor,this,Rage,actualDelta);
+
+	return actualDelta != 0;
+}
+
+float UARLAttributeComponent::GetRage()
+{
+	return Rage;
+}
+

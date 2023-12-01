@@ -93,7 +93,11 @@ void AARLCharacter::PrimaryInteract()
 
 void AARLCharacter::BlackholeSkill()
 {
-	ActionComponent->StartActionByName(this,"BlackHoleAttack");
+	if (AttributeComponent->GetRage() >= 100)
+	{
+		ActionComponent->StartActionByName(this,"BlackHoleAttack");
+		AttributeComponent->ChangeRageValue(this,-100);
+	}
 }
 
 

@@ -18,9 +18,15 @@ protected:
 
 	UPROPERTY()
 	class UARLWorldUserWidget* ActiveHealthBarWidget;
+
+	UPROPERTY()
+	class UARLWorldUserWidget* SpottedWidget; 
 	
 	UPROPERTY(EditDefaultsOnly, Category="ui")
 	TSubclassOf<UUserWidget> HealthBarWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly,Category="ui")
+	TSubclassOf<UUserWidget> SpottedWidgetClass;
 	
 	UPROPERTY(VisibleAnywhere,Category="Effects")
 	FName TimeToHitParameter;

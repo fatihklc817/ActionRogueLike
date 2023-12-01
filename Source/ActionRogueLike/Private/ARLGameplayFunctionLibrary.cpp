@@ -10,6 +10,7 @@ bool UARLGameplayFunctionLibrary::ApplyDamage(AActor* DamageCauser, AActor* Targ
 	UARLAttributeComponent* AttibureComp = UARLAttributeComponent::GetAttributes(TargetActor);
 	if (AttibureComp)
 	{
+		AttibureComp->ChangeRageValue(DamageCauser,damageAmount);
 		return AttibureComp-> ApplyHealthChange(DamageCauser,-damageAmount);
 	}
 	return false;

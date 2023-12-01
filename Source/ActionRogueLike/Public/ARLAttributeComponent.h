@@ -7,6 +7,8 @@
 #include "ARLAttributeComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*,InsitagorActor, UARLAttributeComponent*,OwningComp, float,newHealth, float,Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnRageChanged, AActor*,InsitagorActor, UARLAttributeComponent*,OwningComp, float,newHealth, float,Delta);
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ACTIONROGUELIKE_API UARLAttributeComponent : public UActorComponent
@@ -24,6 +26,11 @@ protected:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category="Attributes")
 	float MaxHealth{100};
 
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category="Attributes")
+	float Rage{0};
+	
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category="Attributes")
+	float MaxRage{100};
 	//healthmax, stamina,strenth
 
 public:
@@ -44,6 +51,9 @@ public:
 	
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnRageChanged OnRageChanged;
 	
 	UFUNCTION(BlueprintCallable,Category="Attiribute")
 	bool ApplyHealthChange(AActor* InstigatorActor ,float delta);
@@ -53,6 +63,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool Kill(AActor* Instigator);
+
+	UFUNCTION(BlueprintCallable)
+	bool ChangeRageValue(AActor* InstigatorActor, float delta);
+
+	UFUNCTION(BlueprintCallable)
+	float GetRage();
 
 	
 };

@@ -45,13 +45,17 @@ void AARLMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponen
 			SetInstigator(Cast<APawn>(OtherActor));
 			return;
 		}
-
+		
 		if(UARLGameplayFunctionLibrary::ApplyDirectionalDamage(gettedInstigator,OtherActor,DamageAmount,SweepResult))
 		{
 			Explode();
 			if (ActionComp)
 			{
 				ActionComp->AddAction(gettedInstigator, BurningActionClass);
+				if (ActionComp->ActiveGameplayTags.HasTag(ThornTag))
+				{
+					UARLGameplayFunctionLibrary::ApplyDamage(OtherActor,gettedInstigator,DamageAmount / 2);
+				}
 			}
 		}
 		

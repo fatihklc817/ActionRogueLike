@@ -45,6 +45,22 @@ void AARLAICharacter::OnPawnSeen(APawn* Pawn)
 	{
 		SetTargetActor(Pawn);
 		DrawDebugString(GetWorld(),GetActorLocation(),"Player Spotted",nullptr,FColor::White,4,true);
+		if (SpottedWidget == nullptr)
+		{
+			SpottedWidget = CreateWidget<UARLWorldUserWidget>(GetWorld(),SpottedWidgetClass);
+			if (SpottedWidget)
+			{
+				SpottedWidget->AttachedActor = this;
+				SpottedWidget->AddToViewport();
+			}
+		}
+		else
+		{
+			if (!SpottedWidget->IsInViewport())
+			{
+				SpottedWidget->AddToViewport();
+			}
+		}
 	}
 }
 
