@@ -33,19 +33,28 @@ void UARLInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FindBestInteractable();
+	APawn* MyPawn = Cast<APawn>(GetOwner());
+	if (MyPawn->IsLocallyControlled())
+	{
+		FindBestInteractable();
+	}
 }
 
 void UARLInteractionComponent::PrimaryInteract()
 {
-	if (FocusedActor == nullptr)
+	ServerInteract(FocusedActor);
+}
+
+void UARLInteractionComponent::ServerInteract_Implementation(AActor* InFocus)
+{
+	if (InFocus == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("no focus actor to interact"));
 		return;
 	}
 	
 	APawn* MyPawn = Cast<APawn>(GetOwner());
-	IARLGameplayInterface::Execute_Interact(FocusedActor,MyPawn);
+	IARLGameplayInterface::Execute_Interact(InFocus,MyPawn);
 	
 }
 

@@ -24,11 +24,18 @@ protected:
 
 	UPROPERTY(VisibleAnywhere , BlueprintReadWrite)
 	UStaticMeshComponent* LidMesh;
-	
+
+	UPROPERTY(ReplicatedUsing="OnRep_LidOpened")
+	bool bLidOpened;
+
+	UFUNCTION()
+	void OnRep_LidOpened();
 	
 public:	
 	// Sets default values for this actor's properties
 	AARLItemChest();
+	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-
+	
 };

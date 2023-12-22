@@ -43,6 +43,9 @@ public:
 	UFUNCTION()
 	void PrimaryInteract();
 
+	UFUNCTION(Server,Reliable)
+	void ServerInteract(AActor* InFocus);
+
 	void FindBestInteractable();
 
 		
