@@ -15,7 +15,7 @@ class ACTIONROGUELIKE_API UARLWorldUserWidget : public UUserWidget
 	GENERATED_BODY()
 public:
 	
-	UPROPERTY(BlueprintReadOnly,Category="ui")
+	UPROPERTY(BlueprintReadWrite,Category="ui" , meta=(ExposeOnSpawn = true))
 	AActor* AttachedActor;
 
 	UPROPERTY(EditAnywhere,Category="ui")

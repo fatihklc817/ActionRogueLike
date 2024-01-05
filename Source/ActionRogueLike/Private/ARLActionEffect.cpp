@@ -42,10 +42,10 @@ void UARLActionEffect::StopAction_Implementation(AActor* Instigator)
 	GetWorld()->GetTimerManager().ClearTimer(PeriodHandle);
 	GetWorld()->GetTimerManager().ClearTimer(DurationHandle);
 
-	UARLActionComponent* ActionComp = GetOwningComponent();
-	if (ActionComp)
+	UARLActionComponent* ActionComponent = GetOwningComponent();
+	if (ActionComponent)
 	{
-		ActionComp->RemoveAction(this);
+		ActionComponent->RemoveAction(this);
 	}
 
 }

@@ -13,6 +13,12 @@ class ACTIONROGUELIKE_API AARLBasePickUp : public AActor, public IARLGameplayInt
 	GENERATED_BODY()
 protected:
 
+	UPROPERTY(ReplicatedUsing="OnRep_IsActive")
+	bool bIsActive;
+
+	UFUNCTION()
+	void OnRep_IsActive();
+	
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComp;
 
@@ -30,4 +36,6 @@ public:
 protected:
 	virtual void ReActivatePickup();
 	virtual void DisablePickup();
+
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 };

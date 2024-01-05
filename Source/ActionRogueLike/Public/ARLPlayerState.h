@@ -19,8 +19,11 @@ class ACTIONROGUELIKE_API AARLPlayerState : public APlayerState
 
 protected:
 
-	UPROPERTY(VisibleAnywhere,Category="PState")
+	UPROPERTY(VisibleAnywhere,Category="PState", ReplicatedUsing="OnRep_Credits")
 	float Credits;
+
+	UFUNCTION()
+	void OnRep_Credits(float OldCredits);
 
 public:
 	UFUNCTION(BlueprintCallable)
@@ -34,4 +37,6 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnCreditsChanged OnCreditsChanged;
+
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 };

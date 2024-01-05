@@ -4,6 +4,7 @@
 #include "ARLAttributeComponent.h"
 
 #include "ARLGameModeBase.h"
+#include "Net/UnrealNetwork.h"
 
 
 static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("arlu.DamageMultiplier"),1,TEXT("Global damage multiplier for attribute comp"),ECVF_Cheat);
@@ -12,7 +13,7 @@ static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("arlu.DamageMultipl
 // Sets default values for this component's properties
 UARLAttributeComponent::UARLAttributeComponent()
 {
-	
+	SetIsReplicatedByDefault(true);
 }
 
 void UARLAttributeComponent::BeginPlay()
@@ -64,7 +65,12 @@ bool UARLAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float de
 	Health += delta;
 	Health = FMath::Clamp(Health,0.0f,MaxHealth);
 	float actualDelta = Health - oldHealth;
-	OnHealthChanged.Broadcast(InstigatorActor,this,Health,actualDelta);
+	//OnHealthChanged.Broadcast(InstigatorActor,this,Health,actualDelta);
+
+	if (actualDelta != 0)
+	{
+		MulticastHealthChange(InstigatorActor,Health,actualDelta);
+	}
 
 	//died
 	if (actualDelta < 0 && Health == 0)
@@ -97,12 +103,25 @@ bool UARLAttributeComponent::ChangeRageValue(AActor* InstigatorActor, float delt
 	Rage = FMath::Clamp(Rage,0.0f,MaxRage);
 	float actualDelta = Rage - oldRage;
 	OnRageChanged.Broadcast(InstigatorActor,this,Rage,actualDelta);
-
+	
 	return actualDelta != 0;
 }
 
 float UARLAttributeComponent::GetRage()
 {
 	return Rage;
+}
+
+void UARLAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UARLAttributeComponent,Health);
+	DOREPLIFETIME(UARLAttributeComponent,MaxHealth);
+}
+
+void UARLAttributeComponent::MulticastHealthChange_Implementation(AActor* InstigatorActor, float NewHealth, float Delta)
+{
+	OnHealthChanged.Broadcast(InstigatorActor,this,NewHealth,Delta);
 }
 

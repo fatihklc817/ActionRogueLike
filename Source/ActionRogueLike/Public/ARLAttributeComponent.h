@@ -20,10 +20,10 @@ class ACTIONROGUELIKE_API UARLAttributeComponent : public UActorComponent
 	
 protected:
 
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="Attributes")
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="Attributes" , Replicated)
 	float Health{100};
 
-	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category="Attributes")
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category="Attributes", Replicated)
 	float MaxHealth{100};
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category="Attributes")
@@ -70,5 +70,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetRage();
 
-	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION(NetMulticast,Reliable) //@fixme mark as unrealiable once we moved state our of character
+	void MulticastHealthChange(AActor* InstigatorActor, float NewHealth, float Delta);
 };

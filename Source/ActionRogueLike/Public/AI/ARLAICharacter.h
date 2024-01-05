@@ -48,6 +48,9 @@ protected:
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);
 
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastOnPawnSeen();
+
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, UARLAttributeComponent* OwninComp, float newHealth, float delta);
 

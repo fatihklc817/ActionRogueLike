@@ -12,7 +12,7 @@ class ACTIONROGUELIKE_API AARLExplosiveBarrel : public AActor
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* MeshComp;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)

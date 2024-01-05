@@ -23,15 +23,25 @@ public:
 	bool bAutoStart;
 
 protected:
+	UPROPERTY(Replicated)
+	class UARLActionComponent* ActionComp;
+	
 	UPROPERTY(EditDefaultsOnly,Category="Tags")
 	FGameplayTagContainer GrantsTags;
 	
 	UPROPERTY(EditDefaultsOnly,Category="Tags")
 	FGameplayTagContainer BlockedTags;
 
+	UPROPERTY(ReplicatedUsing="OnRep_IsRunning")
 	bool bIsRunning;
+
+	UFUNCTION()
+	void OnRep_IsRunning();
 	
 public:
+
+	void Initialize(class UARLActionComponent* NewActionComp);
+	
 	UFUNCTION(BlueprintNativeEvent,Category="Action")
 	bool CanStart(AActor* Instigator);
 	
@@ -48,5 +58,12 @@ public:
 
 protected:
 	UFUNCTION(BlueprintCallable,Category="Action")
-	class UARLActionComponent* GetOwningComponent() const ; 
+	class UARLActionComponent* GetOwningComponent() const ;
+
+	virtual void GetLifetimeReplicatedProps( TArray< class FLifetimeProperty > & OutLifetimeProps ) const override;
+
+	virtual bool IsSupportedForNetworking() const override
+	{
+		return true;
+	}
 };

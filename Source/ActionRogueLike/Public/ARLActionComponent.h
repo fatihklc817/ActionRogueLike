@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -17,7 +17,7 @@ public:
 	FGameplayTagContainer ActiveGameplayTags;
 	
 protected:
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TArray<class UARLAction*> Actions;
 
 	UPROPERTY(EditAnywhere,Category="Actions")
@@ -28,6 +28,9 @@ public:
 	UARLActionComponent();
 
 protected:
+
+	UFUNCTION(Server,Reliable)
+	void  ServerStartAction(AActor* Instigator, FName ActionName);
 	
 	virtual void BeginPlay() override;
 
@@ -46,5 +49,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Actions")
 	bool StopActionByName(AActor* Instigator,FName ActionName);
-	
+
+	virtual void GetLifetimeReplicatedProps( TArray< class FLifetimeProperty > & OutLifetimeProps ) const override;
+
+	virtual bool ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags) override;
 };

@@ -4,20 +4,35 @@
 #include "ARLActionComponent.h"
 
 #include "ARLAction.h"
+#include "ActionRogueLike/ActionRogueLike.h"
+#include "Engine/ActorChannel.h"
+#include "Net/UnrealNetwork.h"
 
 
 UARLActionComponent::UARLActionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	SetIsReplicatedByDefault(true);
+}
+
+void UARLActionComponent::ServerStartAction_Implementation(AActor* Instigator, FName ActionName)
+{
+	StartActionByName(Instigator,ActionName);
 }
 
 
 void UARLActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	for(TSubclassOf<UARLAction> actionClass :DefaultActions)
+	
+	//server only
+	if (GetOwner()->HasAuthority())
 	{
-		AddAction(GetOwner(), actionClass);
+		for(TSubclassOf<UARLAction> actionClass :DefaultActions)
+		{
+			AddAction(GetOwner(), actionClass);
+		}
 	}
 }
 
@@ -26,8 +41,21 @@ void UARLActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FString Debugmsg = GetNameSafe(GetOwner()) + ":" + ActiveGameplayTags.ToStringSimple();
-	GEngine -> AddOnScreenDebugMessage(-1,0,FColor::White,Debugmsg);
+	//FString Debugmsg = GetNameSafe(GetOwner()) + ":" + ActiveGameplayTags.ToStringSimple();
+	//GEngine -> AddOnScreenDebugMessage(-1,0,FColor::White,Debugmsg);
+
+	for (UARLAction* Action : Actions)
+	{
+		FColor TextColor = Action->GetIsRunning() ? FColor::Blue : FColor::White;
+		FString ActionMsg = FString::Printf(TEXT("[%s] Action : %s : Is Running : %s : outer : %s"),
+		*GetNameSafe(GetOwner()),
+		*Action->ActionName.ToString(),
+		Action->GetIsRunning() ? TEXT("true") : TEXT("false"),
+		*GetNameSafe(Action->GetOuter())
+		);
+		
+		LogOnScreen(this,ActionMsg,TextColor,0);
+	}
 }
 
 void UARLActionComponent::AddAction(AActor* Instigator, TSubclassOf<UARLAction> ActionClass)
@@ -37,9 +65,10 @@ void UARLActionComponent::AddAction(AActor* Instigator, TSubclassOf<UARLAction> 
 		return;
 	}
 
-	UARLAction* NewAction = NewObject<UARLAction>(this, ActionClass);
+	UARLAction* NewAction = NewObject<UARLAction>(GetOwner(), ActionClass);
 	if (ensure(NewAction))
 	{
+		NewAction->Initialize(this);
 		Actions.Add(NewAction);
 		if (NewAction -> bAutoStart && ensure(NewAction->CanStart(Instigator)))
 		{
@@ -71,6 +100,12 @@ bool UARLActionComponent::StartActionByName(AActor* Instigator, FName ActionName
 				GEngine->AddOnScreenDebugMessage(-1,2,FColor::Red,FailedMSg);
 				continue;
 			}
+
+			//Is Client
+			if (!GetOwner()->HasAuthority())
+			{
+				ServerStartAction(Instigator,ActionName);
+			}
 			action->StartAction(Instigator);
 			return true;
 		}
@@ -92,5 +127,25 @@ bool UARLActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 		}
 	}
 	return false;
+}
+
+void UARLActionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UARLActionComponent,Actions);
+}
+
+bool UARLActionComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
+{
+	bool WroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+	for (UARLAction* Action : Actions)
+	{
+		if (Action)
+		{
+			WroteSomething |= Channel->ReplicateSubobject(Action,*Bunch,*RepFlags);
+		}
+	}
+	return WroteSomething;
 }
 

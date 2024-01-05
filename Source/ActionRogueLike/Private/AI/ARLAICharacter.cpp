@@ -42,24 +42,27 @@ void AARLAICharacter::PostInitializeComponents()
 
 void AARLAICharacter::OnPawnSeen(APawn* Pawn)
 {
-	{
 		SetTargetActor(Pawn);
-		DrawDebugString(GetWorld(),GetActorLocation(),"Player Spotted",nullptr,FColor::White,4,true);
-		if (SpottedWidget == nullptr)
+		MulticastOnPawnSeen();
+}
+
+void AARLAICharacter::MulticastOnPawnSeen_Implementation()
+{
+	DrawDebugString(GetWorld(),GetActorLocation(),"Player Spotted",nullptr,FColor::White,4,true);
+	if (SpottedWidget == nullptr)
+	{
+		SpottedWidget = CreateWidget<UARLWorldUserWidget>(GetWorld(),SpottedWidgetClass);
+		if (SpottedWidget)
 		{
-			SpottedWidget = CreateWidget<UARLWorldUserWidget>(GetWorld(),SpottedWidgetClass);
-			if (SpottedWidget)
-			{
-				SpottedWidget->AttachedActor = this;
-				SpottedWidget->AddToViewport();
-			}
+			SpottedWidget->AttachedActor = this;
+			SpottedWidget->AddToViewport();
 		}
-		else
+	}
+	else
+	{
+		if (!SpottedWidget->IsInViewport())
 		{
-			if (!SpottedWidget->IsInViewport())
-			{
-				SpottedWidget->AddToViewport();
-			}
+			SpottedWidget->AddToViewport();
 		}
 	}
 }

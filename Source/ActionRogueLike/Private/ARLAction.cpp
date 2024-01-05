@@ -4,10 +4,13 @@
 #include "ARLAction.h"
 
 #include "ARLActionComponent.h"
+#include "ActionRogueLike/ActionRogueLike.h"
+#include "Net/UnrealNetwork.h"
 
 void UARLAction::StartAction_Implementation(AActor* Instigator)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Running %s"),*GetNameSafe(this));
+	//UE_LOG(LogTemp, Warning, TEXT("Running %s"),*GetNameSafe(this));
+	LogOnScreen(this,FString::Printf(TEXT("Started %s"),*ActionName.ToString()),FColor::Green);
 
 	UARLActionComponent* ActionComponent = GetOwningComponent();
 
@@ -17,9 +20,9 @@ void UARLAction::StartAction_Implementation(AActor* Instigator)
 
 void UARLAction::StopAction_Implementation(AActor* Instigator)
 {
-	ensureAlways(bIsRunning);
-	 
-	UE_LOG(LogTemp, Warning, TEXT("Stopped %s"),*GetNameSafe(this));
+	//UE_LOG(LogTemp, Warning, TEXT("Stopped %s"),*GetNameSafe(this));
+	LogOnScreen(this,FString::Printf(TEXT("Stopped %s"),*ActionName.ToString()),FColor::White);
+	
 	UARLActionComponent* ActionComponent = GetOwningComponent();
 	ActionComponent->ActiveGameplayTags.RemoveTags(GrantsTags);
 	bIsRunning = false;
@@ -32,8 +35,8 @@ bool UARLAction::CanStart_Implementation(AActor* Instigator)
 		return false;
 	}
 	
-	UARLActionComponent* ActionComp = GetOwningComponent();
-	if (ActionComp->ActiveGameplayTags.HasAny(BlockedTags))
+	UARLActionComponent* ActionComponent = GetOwningComponent();
+	if (ActionComponent->ActiveGameplayTags.HasAny(BlockedTags))
 	{
 		return false;
 	}
@@ -41,13 +44,30 @@ bool UARLAction::CanStart_Implementation(AActor* Instigator)
 	return true;
 }
 
+void UARLAction::OnRep_IsRunning()
+{
+	if (bIsRunning)
+	{
+		StartAction(nullptr);
+	}
+	else
+	{
+		StopAction(nullptr);
+	}
+}
+
+void UARLAction::Initialize(UARLActionComponent* NewActionComp)
+{
+	ActionComp = NewActionComp;
+}
+
 UWorld* UARLAction::GetWorld() const
 {
 	// outer is set when creating action with NewObject<T>
-	UActorComponent* ActorComp = Cast<UActorComponent>(GetOuter());
-	if (ActorComp)
+	AActor* Actor = Cast<AActor>(GetOuter());
+	if (Actor)
 	{
-		return ActorComp->GetWorld();
+		return Actor->GetWorld();
 	}
 	return nullptr;
 }
@@ -59,5 +79,14 @@ bool UARLAction::GetIsRunning() const
 
 UARLActionComponent* UARLAction::GetOwningComponent() const
 {
-	return Cast<UARLActionComponent>(GetOuter());
+	return ActionComp;
 }
+
+void UARLAction::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UARLAction,bIsRunning);
+	DOREPLIFETIME(UARLAction,ActionComp);
+}
+

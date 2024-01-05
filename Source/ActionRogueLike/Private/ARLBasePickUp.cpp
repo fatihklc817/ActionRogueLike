@@ -3,6 +3,9 @@
 
 #include "ARLBasePickUp.h"
 
+#include "Net/UnrealNetwork.h"
+
+
 // Sets default values
 AARLBasePickUp::AARLBasePickUp()
 {
@@ -11,6 +14,10 @@ AARLBasePickUp::AARLBasePickUp()
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
 	RootComponent = MeshComp;
+
+	SetReplicates(true);
+
+	bIsActive = true;
 }
 
 void AARLBasePickUp::Interact_Implementation(APawn* InstigatorPawn)
@@ -22,6 +29,7 @@ void AARLBasePickUp::ReActivatePickup()
 {
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	MeshComp->SetHiddenInGame(false);
+	bIsActive = true;
 }
 
 void AARLBasePickUp::DisablePickup()
@@ -29,7 +37,25 @@ void AARLBasePickUp::DisablePickup()
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	MeshComp->SetHiddenInGame(true);
 	GetWorldTimerManager().SetTimer(TimerHandle_PickupActivate,this,&AARLBasePickUp::ReActivatePickup,PickupActivateSecond,false);
+	bIsActive = false;
+}
+
+void AARLBasePickUp::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AARLBasePickUp,bIsActive);
 }
 
 
-
+void AARLBasePickUp::OnRep_IsActive()
+{
+	if (bIsActive)
+	{
+		ReActivatePickup();
+	}
+	else
+	{
+		DisablePickup();
+	}
+}

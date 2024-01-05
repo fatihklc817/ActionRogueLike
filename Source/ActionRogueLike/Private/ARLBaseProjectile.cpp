@@ -31,6 +31,8 @@ AARLBaseProjectile::AARLBaseProjectile()
 	ProjectileMovementComp->bRotationFollowsVelocity = true;
 	ProjectileMovementComp->bInitialVelocityInLocalSpace = true;
 	ProjectileMovementComp->ProjectileGravityScale = 0;
+
+	SetReplicates(true);
 }
 
 void AARLBaseProjectile::PostInitializeComponents()
