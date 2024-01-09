@@ -127,13 +127,15 @@ void AARLCharacter::onHealthChanged(AActor* InstigatorActor, UARLAttributeCompon
 		FVector MyColorVector = FVector(hitFlashColor.R,hitFlashColor.G,hitFlashColor.B);
 		GetMesh()->SetVectorParameterValueOnMaterials("HitFlashColor",MyColorVector);
 	}
-	
+
+	//died
 	if (newHealth <= 0 && delta < 0)
 	{
 		APlayerController* PlayerController = Cast<APlayerController>(GetController());
 		DisableInput(PlayerController);
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		  
+		//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		SetLifeSpan(5);
 	}
 }
 
