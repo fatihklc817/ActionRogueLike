@@ -49,7 +49,7 @@ void AARLMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponen
 		if(UARLGameplayFunctionLibrary::ApplyDirectionalDamage(gettedInstigator,OtherActor,DamageAmount,SweepResult))
 		{
 			Explode();
-			if (ActionComp)
+			if (ActionComp && HasAuthority())
 			{
 				ActionComp->AddAction(gettedInstigator, BurningActionClass);
 				if (ActionComp->ActiveGameplayTags.HasTag(ThornTag))

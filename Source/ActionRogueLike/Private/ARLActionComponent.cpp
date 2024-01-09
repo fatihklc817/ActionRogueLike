@@ -22,6 +22,11 @@ void UARLActionComponent::ServerStartAction_Implementation(AActor* Instigator, F
 }
 
 
+void UARLActionComponent::ServerStopAction_Implementation(AActor* Instigator, FName ActionName)
+{
+	StopActionByName(Instigator,ActionName);
+}
+
 void UARLActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -47,13 +52,7 @@ void UARLActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	for (UARLAction* Action : Actions)
 	{
 		FColor TextColor = Action->GetIsRunning() ? FColor::Blue : FColor::White;
-		FString ActionMsg = FString::Printf(TEXT("[%s] Action : %s : Is Running : %s : outer : %s"),
-		*GetNameSafe(GetOwner()),
-		*Action->ActionName.ToString(),
-		Action->GetIsRunning() ? TEXT("true") : TEXT("false"),
-		*GetNameSafe(Action->GetOuter())
-		);
-		
+		FString ActionMsg = FString::Printf(TEXT("[%s] Action : %s"), *GetNameSafe(GetOwner()), *GetNameSafe(Action) );
 		LogOnScreen(this,ActionMsg,TextColor,0);
 	}
 }
@@ -62,6 +61,13 @@ void UARLActionComponent::AddAction(AActor* Instigator, TSubclassOf<UARLAction> 
 {
 	if (!ensure(ActionClass))
 	{
+		return;
+	}
+
+	//skip for clients
+	if (!GetOwner()->HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("client trying to add action"));
 		return;
 	}
 
@@ -121,6 +127,12 @@ bool UARLActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 		{
 			if (action->GetIsRunning())
 			{
+				//is client
+				if (!GetOwner()->HasAuthority())
+				{
+					ServerStopAction(Instigator,ActionName);					
+				}
+				
 				action->StopAction(Instigator);
 				return true;
 			}

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -10,6 +10,19 @@
 /**
  * 
  */
+ USTRUCT()
+ struct FActionRepData
+ {
+ 	GENERATED_BODY()
+ 	
+ public:
+ 		UPROPERTY()
+ 		bool bIsRunning;
+
+ 		UPROPERTY()
+ 		AActor* Instigator;
+ };
+
 UCLASS(Blueprintable)
 class ACTIONROGUELIKE_API UARLAction : public UObject
 {
@@ -32,11 +45,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly,Category="Tags")
 	FGameplayTagContainer BlockedTags;
 
-	UPROPERTY(ReplicatedUsing="OnRep_IsRunning")
-	bool bIsRunning;
+	UPROPERTY(ReplicatedUsing="OnRep_RepData")
+	FActionRepData RepData;
+	//bool bIsRunning;
 
 	UFUNCTION()
-	void OnRep_IsRunning();
+	void OnRep_RepData();
 	
 public:
 

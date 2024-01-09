@@ -9,28 +9,30 @@
 
 void UARLAction::StartAction_Implementation(AActor* Instigator)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Running %s"),*GetNameSafe(this));
-	LogOnScreen(this,FString::Printf(TEXT("Started %s"),*ActionName.ToString()),FColor::Green);
+	UE_LOG(LogTemp, Warning, TEXT("Running %s"),*GetNameSafe(this));
+	//LogOnScreen(this,FString::Printf(TEXT("Started %s"),*ActionName.ToString()),FColor::Green);
 
 	UARLActionComponent* ActionComponent = GetOwningComponent();
 
 	ActionComponent->ActiveGameplayTags.AppendTags(GrantsTags);
-	bIsRunning = true;
+	RepData.bIsRunning = true;
+	RepData.Instigator = Instigator;
 }
 
 void UARLAction::StopAction_Implementation(AActor* Instigator)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Stopped %s"),*GetNameSafe(this));
-	LogOnScreen(this,FString::Printf(TEXT("Stopped %s"),*ActionName.ToString()),FColor::White);
+	UE_LOG(LogTemp, Warning, TEXT("Stopped %s"),*GetNameSafe(this));
+	//LogOnScreen(this,FString::Printf(TEXT("Stopped %s"),*ActionName.ToString()),FColor::White);
 	
 	UARLActionComponent* ActionComponent = GetOwningComponent();
 	ActionComponent->ActiveGameplayTags.RemoveTags(GrantsTags);
-	bIsRunning = false;
+	RepData.bIsRunning = false;
+	RepData.Instigator = Instigator;
 }
 
 bool UARLAction::CanStart_Implementation(AActor* Instigator)
 {
-	if (bIsRunning)
+	if (RepData.bIsRunning)
 	{
 		return false;
 	}
@@ -44,15 +46,15 @@ bool UARLAction::CanStart_Implementation(AActor* Instigator)
 	return true;
 }
 
-void UARLAction::OnRep_IsRunning()
+void UARLAction::OnRep_RepData()
 {
-	if (bIsRunning)
+	if (RepData.bIsRunning)
 	{
-		StartAction(nullptr);
+		StartAction(RepData.Instigator);
 	}
 	else
 	{
-		StopAction(nullptr);
+		StopAction(RepData.Instigator);
 	}
 }
 
@@ -74,7 +76,7 @@ UWorld* UARLAction::GetWorld() const
 
 bool UARLAction::GetIsRunning() const
 {
-	return bIsRunning;
+	return RepData.bIsRunning;
 }
 
 UARLActionComponent* UARLAction::GetOwningComponent() const
@@ -86,7 +88,7 @@ void UARLAction::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UARLAction,bIsRunning);
+	DOREPLIFETIME(UARLAction,RepData);
 	DOREPLIFETIME(UARLAction,ActionComp);
 }
 

@@ -62,23 +62,28 @@ bool UARLAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float de
 	
 	//UE_LOG(LogTemp, Warning, TEXT("healtchangeeedd"));			//actual delta can be added (old health - new health )
 	float oldHealth = Health;
-	Health += delta;
-	Health = FMath::Clamp(Health,0.0f,MaxHealth);
-	float actualDelta = Health - oldHealth;
-	//OnHealthChanged.Broadcast(InstigatorActor,this,Health,actualDelta);
-
-	if (actualDelta != 0)
+	float NewHealth = Health + delta;
+	NewHealth = FMath::Clamp(NewHealth,0.0f,MaxHealth);
+	float actualDelta = NewHealth  - oldHealth;
+	
+	//server
+	if (GetOwner()->HasAuthority())
 	{
-		MulticastHealthChange(InstigatorActor,Health,actualDelta);
-	}
+		Health = NewHealth;
 
-	//died
-	if (actualDelta < 0 && Health == 0)
-	{
-		AARLGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AARLGameModeBase>();
-		if (GameMode)
+		if (actualDelta != 0)
 		{
-			GameMode->OnActorKilled(GetOwner(), InstigatorActor);
+			MulticastHealthChange(InstigatorActor,Health,actualDelta);
+		}
+		
+		//died
+		if (actualDelta < 0 && Health == 0)
+		{
+			AARLGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AARLGameModeBase>();
+			if (GameMode)
+			{
+				GameMode->OnActorKilled(GetOwner(), InstigatorActor);
+			}
 		}
 	}
 	
