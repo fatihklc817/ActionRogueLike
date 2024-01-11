@@ -5,22 +5,38 @@
 
 #include "ARLAttributeComponent.h"
 #include "ARLCharacter.h"
+#include "ARLGameplayInterface.h"
 #include "ARLPlayerState.h"
+#include "ARLSaveGame.h"
 #include "EngineUtils.h"
 #include "AI/ARLAICharacter.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
+#include "GameFramework/GameStateBase.h"
+#include "Kismet/GameplayStatics.h"
+#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 
 static TAutoConsoleVariable<bool> CvarSpawnBots(TEXT("arlu.SpawnBots"),true,TEXT("enable spawning bots via timer"),ECVF_Cheat);
 
 AARLGameModeBase::AARLGameModeBase()
 {
 	SpawnTimerInterval = 2;
+
+	SlotName = "SaveGame01";
 	
+}
+
+void AARLGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+
+	LoadSaveGame();	
 }
 
 void AARLGameModeBase::StartPlay()
 {
 	Super::StartPlay();
+
+	LoadSaveGame();     // bu ne kadar doğru bilmiyorum ama iki kere çağırarak hem creditsin hem de actor transformlarının yüklenmesini sağladım
 
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots,this,&AARLGameModeBase::SpawnBotTimerElapsed,SpawnTimerInterval,true);
 
@@ -195,23 +211,108 @@ void AARLGameModeBase::OnSpawnPickupsQueryCompleted(TSharedPtr<FEnvQueryResult> 
 	
 }
 
+void AARLGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+
+	AARLPlayerState* PlayerState = NewPlayer->GetPlayerState<AARLPlayerState>();
+	if (PlayerState)
+	{
+		PlayerState->LoadPlayerState(CurrentSaveGame);
+	}
+	
+}
+
+void AARLGameModeBase::WriteSaveGame()
+{
+	//iterate all player states 
+	for (int32 i =0 ; i < GameState->PlayerArray.Num(); i++)
+	{
+		AARLPlayerState* PlayerState = Cast<AARLPlayerState>(GameState->PlayerArray[i]);
+		if (PlayerState)
+		{
+			PlayerState->SavePlayerState(CurrentSaveGame);
+			//break;
+		}
+	}
+
+	CurrentSaveGame->SavedActors.Empty();
+	
+	 //iterate all actors
+	for (AActor* actor : TActorRange<AActor>(GetWorld()))
+	{
+		if (actor ->Implements<UARLGameplayInterface>())
+		{
+			FActorSaveData ActorData;
+			ActorData.ActorName = actor->GetName();
+			ActorData.Transform = actor->GetActorTransform();
+
+			//pass the array to fill with data from actor 
+			FMemoryWriter MemoryWriter(ActorData.ByteData);
+			
+			FObjectAndNameAsStringProxyArchive Archive(MemoryWriter,true);
+
+			//find only variables wiht upropety (savegame)
+			Archive.ArIsSaveGame = true;
+
+			//converst actors savegames uproperties to binary array
+			actor->Serialize(Archive);
+			
+			
+			CurrentSaveGame->SavedActors.Add(ActorData);
+		}
+	}
+	
+	UGameplayStatics::SaveGameToSlot(CurrentSaveGame,SlotName,0);
+}
+
+void AARLGameModeBase::LoadSaveGame()
+{
+	if (UGameplayStatics::DoesSaveGameExist(SlotName, 0))
+	{
+		CurrentSaveGame = Cast<UARLSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0));
+		if (CurrentSaveGame == nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("failed to load savegame data "));
+			return;
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("loaded savegame data"));
+
+		for (AActor* actor : TActorRange<AActor>(GetWorld()))
+		{
+			if (actor->Implements<UARLGameplayInterface>())
+			{
+				for (FActorSaveData ActorData : CurrentSaveGame->SavedActors)
+				{
+					if (ActorData.ActorName == actor->GetName())
+					{
+						actor->SetActorTransform(ActorData.Transform);
+
+						FMemoryReader MemoryReader(ActorData.ByteData);
+						FObjectAndNameAsStringProxyArchive Archive(MemoryReader,true);
+
+						//convert binary array back to actors variables
+						actor->Serialize(Archive);
+						
+						IARLGameplayInterface::Execute_OnActorLoaded(actor);
+						
+						//UE_LOG(LogTemp, Warning, TEXT("actor loaded : %s"),*actor->GetName());
+						break;
+					}
+				}
+			}
+		}
+		
+	}
+	else
+	{
+		CurrentSaveGame = Cast<UARLSaveGame>(UGameplayStatics::CreateSaveGameObject(UARLSaveGame::StaticClass()));
+
+		UE_LOG(LogTemp, Warning, TEXT("created new savegame data"));
+	}
+	
+}
 
 
-// void AARLGameModeBase::SpawnCrediCoinPickup()
-// {
-// 	SpawnPickupQueryRequest.Execute(EEnvQueryRunMode::AllMatching,this, &AARLGameModeBase::OnSpawnCreditCoinPickupQueryCompleted);
-// }
-
-
-// void AARLGameModeBase::OnSpawnCreditCoinPickupQueryCompleted(TSharedPtr<FEnvQueryResult> Result)
-// {
-// 	TArray<FVector> locations;
-// 	Result->GetAllAsLocations(locations);
-// 	FVector randLocation = locations[FMath::RandRange(0,locations.Num()-1)];
-// 	FVector SpawnLocationFixed = FVector(randLocation.X,randLocation.Y,75);
-// 	GetWorld()->SpawnActor<AActor>(CreditCoinPickupClass,SpawnLocationFixed,FRotator::ZeroRotator);
-// 	UE_LOG(LogTemp, Warning, TEXT("RANDOM COİNNNNN  PİCKJUPPP SPAWNEDDDDDDDDDDDDDDDDDDDDDDDD"));
-//
-// 	//@fixme add distance to other pickups check in the eqs !! 
-// }
 

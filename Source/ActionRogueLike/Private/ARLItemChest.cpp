@@ -13,6 +13,12 @@ void AARLItemChest::Interact_Implementation(APawn* InstigatorPawn)
 
 }
 
+void AARLItemChest::OnActorLoaded_Implementation()
+{
+	OnRep_LidOpened();
+	
+}
+
 void AARLItemChest::OnRep_LidOpened()
 {
 	float CurrentPitch = bLidOpened ? TargetPitch : 0;
@@ -33,7 +39,8 @@ AARLItemChest::AARLItemChest()
 
 	TargetPitch = 110;
 
-	SetReplicates(true);
+	bReplicates = true;
+	//SetReplicates(true);
 }
 
 void AARLItemChest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

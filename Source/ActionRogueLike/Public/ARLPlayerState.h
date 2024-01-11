@@ -39,4 +39,11 @@ public:
 	FOnCreditsChanged OnCreditsChanged;
 
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
+
+	UFUNCTION(BlueprintNativeEvent)
+	void SavePlayerState(class UARLSaveGame* SaveObject);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void LoadPlayerState(UARLSaveGame* SaveObject);
+	
 };

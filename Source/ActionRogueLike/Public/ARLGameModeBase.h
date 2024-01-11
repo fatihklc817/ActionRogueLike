@@ -17,6 +17,12 @@ class ACTIONROGUELIKE_API AARLGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 protected:
+
+	FString SlotName;
+	
+	UPROPERTY()
+	class UARLSaveGame* CurrentSaveGame;
+	
 	FTimerHandle TimerHandle_SpawnBots;
 
 	UPROPERTY(EditDefaultsOnly,Category="ai")
@@ -58,6 +64,8 @@ protected:
 	
 public:
 	AARLGameModeBase();
+
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	
 	virtual void StartPlay() override;
 
@@ -86,5 +94,12 @@ protected:
 	void OnSpawnPickupsQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
 
 	//void OnSpawnCreditCoinPickupQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
+
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+	
+	UFUNCTION(BlueprintCallable, Category="save")
+	void WriteSaveGame();
+	
+	void LoadSaveGame();
 	
 };

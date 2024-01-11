@@ -3,6 +3,7 @@
 
 #include "ARLPlayerState.h"
 
+#include "ARLSaveGame.h"
 #include "Net/UnrealNetwork.h"
 
 void AARLPlayerState::OnRep_Credits(float OldCredits)
@@ -35,3 +36,22 @@ void AARLPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 	DOREPLIFETIME(AARLPlayerState,Credits);
 }
+
+
+void AARLPlayerState::SavePlayerState_Implementation(UARLSaveGame* SaveObject)
+{
+	if (SaveObject)
+	{
+		SaveObject->Credits = Credits;
+	}	
+}
+
+
+void AARLPlayerState::LoadPlayerState_Implementation(UARLSaveGame* SaveObject)
+{
+	if (SaveObject)
+	{
+		Credits = SaveObject->Credits;
+	}
+}
+
