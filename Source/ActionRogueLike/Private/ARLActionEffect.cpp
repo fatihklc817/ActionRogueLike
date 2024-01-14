@@ -4,6 +4,7 @@
 #include "ARLActionEffect.h"
 
 #include "ARLActionComponent.h"
+#include "GameFramework/GameStateBase.h"
 
 UARLActionEffect::UARLActionEffect()
 {
@@ -55,3 +56,14 @@ void UARLActionEffect::ExecutePeriodicEffect_Implementation(AActor* Instigator)
 	
 }
 
+float UARLActionEffect::GetTimeRemaining() const
+{
+	AGameStateBase* GameState = GetWorld()->GetGameState<AGameStateBase>();
+	if (GameState)
+	{
+		float EndTime = TimeStarted + Duration;
+		return EndTime - GameState->GetServerWorldTimeSeconds();
+	}
+
+	return Duration; 
+}

@@ -36,6 +36,9 @@ public:
 	bool bAutoStart;
 
 protected:
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="ui")
+	UTexture2D* Icon;
+	
 	UPROPERTY(Replicated)
 	class UARLActionComponent* ActionComp;
 	
@@ -45,10 +48,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly,Category="Tags")
 	FGameplayTagContainer BlockedTags;
 
+	UPROPERTY(Replicated)
+	float TimeStarted;
+	
 	UPROPERTY(ReplicatedUsing="OnRep_RepData")
 	FActionRepData RepData;
 	//bool bIsRunning;
 
+		
+	
 	UFUNCTION()
 	void OnRep_RepData();
 	
@@ -69,6 +77,8 @@ public:
 
 	UFUNCTION(BlueprintCallable,Category="Action")
 	bool GetIsRunning()const;
+
+
 
 protected:
 	UFUNCTION(BlueprintCallable,Category="Action")

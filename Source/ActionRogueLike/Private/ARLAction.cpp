@@ -17,6 +17,14 @@ void UARLAction::StartAction_Implementation(AActor* Instigator)
 	ActionComponent->ActiveGameplayTags.AppendTags(GrantsTags);
 	RepData.bIsRunning = true;
 	RepData.Instigator = Instigator;
+
+	//server
+	if (GetOwningComponent()->GetOwnerRole() == ROLE_Authority)
+	{
+		TimeStarted = GetWorld()->TimeSeconds;
+	}
+
+	ActionComponent->OnActionStarted.Broadcast(ActionComponent,this);
 }
 
 void UARLAction::StopAction_Implementation(AActor* Instigator)
@@ -28,6 +36,8 @@ void UARLAction::StopAction_Implementation(AActor* Instigator)
 	ActionComponent->ActiveGameplayTags.RemoveTags(GrantsTags);
 	RepData.bIsRunning = false;
 	RepData.Instigator = Instigator;
+
+	ActionComponent->OnActionStopped.Broadcast(ActionComponent,this);
 }
 
 bool UARLAction::CanStart_Implementation(AActor* Instigator)
@@ -79,6 +89,7 @@ bool UARLAction::GetIsRunning() const
 	return RepData.bIsRunning;
 }
 
+
 UARLActionComponent* UARLAction::GetOwningComponent() const
 {
 	return ActionComp;
@@ -90,5 +101,6 @@ void UARLAction::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 
 	DOREPLIFETIME(UARLAction,RepData);
 	DOREPLIFETIME(UARLAction,ActionComp);
+	DOREPLIFETIME(UARLAction,TimeStarted);
 }
 

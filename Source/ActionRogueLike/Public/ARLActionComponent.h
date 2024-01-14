@@ -7,6 +7,7 @@
 #include "Components/ActorComponent.h"
 #include "ARLActionComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActionStateChanged, UARLActionComponent*, OwningComp, UARLAction* , Action);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ACTIONROGUELIKE_API UARLActionComponent : public UActorComponent
@@ -17,7 +18,7 @@ public:
 	FGameplayTagContainer ActiveGameplayTags;
 	
 protected:
-	UPROPERTY(Replicated)
+	UPROPERTY(BlueprintReadOnly, Replicated)
 	TArray<class UARLAction*> Actions;
 
 	UPROPERTY(EditAnywhere,Category="Actions")
@@ -36,6 +37,8 @@ protected:
 	void  ServerStopAction(AActor* Instigator, FName ActionName);
 	
 	virtual void BeginPlay() override;
+
+	
 
 public:	
 	
@@ -56,4 +59,11 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray< class FLifetimeProperty > & OutLifetimeProps ) const override;
 
 	virtual bool ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags) override;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnActionStateChanged OnActionStarted;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnActionStateChanged OnActionStopped;
+	
 };
