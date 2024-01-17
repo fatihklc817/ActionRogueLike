@@ -125,6 +125,18 @@ void UARLAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	DOREPLIFETIME(UARLAttributeComponent,MaxHealth);
 }
 
+bool UARLAttributeComponent::IsFullHealth()
+{
+	if (Health == MaxHealth)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void UARLAttributeComponent::MulticastHealthChange_Implementation(AActor* InstigatorActor, float NewHealth, float Delta)
 {
 	OnHealthChanged.Broadcast(InstigatorActor,this,NewHealth,Delta);

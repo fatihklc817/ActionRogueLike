@@ -25,6 +25,11 @@ void AARLBasePickUp::Interact_Implementation(APawn* InstigatorPawn)
 	DisablePickup();
 }
 
+FText AARLBasePickUp::GetInteractionText_Implementation(APawn* InstigatorPawn)
+{
+	return FText::GetEmpty();
+}
+
 void AARLBasePickUp::ReActivatePickup()
 {
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);

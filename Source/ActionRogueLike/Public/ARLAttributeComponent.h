@@ -74,4 +74,6 @@ public:
 
 	UFUNCTION(NetMulticast,Reliable) //@fixme mark as unrealiable once we moved state our of character
 	void MulticastHealthChange(AActor* InstigatorActor, float NewHealth, float Delta);
+
+	bool IsFullHealth();
 };

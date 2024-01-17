@@ -33,6 +33,8 @@ public:
 
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 
+	virtual FText GetInteractionText_Implementation(APawn* InstigatorPawn);
+
 protected:
 	virtual void ReActivatePickup();
 	virtual void DisablePickup();
