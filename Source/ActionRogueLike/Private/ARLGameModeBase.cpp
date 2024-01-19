@@ -3,13 +3,17 @@
 
 #include "ARLGameModeBase.h"
 
+#include "ARLActionComponent.h"
 #include "ARLAttributeComponent.h"
 #include "ARLCharacter.h"
 #include "ARLGameplayInterface.h"
+#include "ARLMonsterData.h"
 #include "ARLPlayerState.h"
 #include "ARLSaveGame.h"
 #include "EngineUtils.h"
+#include "ActionRogueLike/ActionRogueLike.h"
 #include "AI/ARLAICharacter.h"
+#include "Engine/AssetManager.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
@@ -127,12 +131,61 @@ void AARLGameModeBase::OnSpawnBotQueryCompleted(UEnvQueryInstanceBlueprintWrappe
 	
 	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
 
+	
 	if (Locations.Num() > 0)
 	{
-		FVector SpawnLocationFixed = FVector(Locations[0].X,Locations[0].Y,90);
-		GetWorld()->SpawnActor<AActor>(MinionClass, SpawnLocationFixed, FRotator::ZeroRotator);
-		DrawDebugSphere(GetWorld(), SpawnLocationFixed,25 ,12,FColor::Orange,true);
+		if (MonsterTable)
+		{
+			TArray<FMonsterInfoRow*> Rows;
+			MonsterTable->GetAllRows("",Rows);
+
+			int32 RandomIndex = FMath::RandRange(0,Rows.Num()-1);
+			FMonsterInfoRow* SelectedRow = Rows[RandomIndex];
+
+			UAssetManager* Manager = UAssetManager::GetIfValid();
+			if (Manager)
+			{
+				LogOnScreen(this,"LoadingMonster",FColor::Green);
+				
+				TArray<FName> Bundles;
+				FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this,&AARLGameModeBase::OnMonsterLoaded,SelectedRow->MonsterID,Locations[0]);
+				Manager->LoadPrimaryAsset(SelectedRow->MonsterID,Bundles,Delegate);
+			}
+		}
 	}
+	
+}
+
+
+void AARLGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedID, FVector SpawnLocation)
+{
+	LogOnScreen(this,"FinishedLoading", FColor::Green);
+	
+	UAssetManager* Manager = UAssetManager::GetIfValid();
+	if (Manager)
+	{
+		UARLMonsterData* MonsterData =Cast<UARLMonsterData>(Manager->GetPrimaryAssetObject(LoadedID));
+		if (MonsterData)
+		{
+			FVector SpawnLocationFixed = FVector(SpawnLocation.X,SpawnLocation.Y,90);
+			AActor* NewBot = GetWorld()->SpawnActor<AActor>(MonsterData->MonsterClass, SpawnLocationFixed, FRotator::ZeroRotator);
+			if (NewBot)
+			{
+				LogOnScreen(this, FString::Printf(TEXT("Spawned enemy : %s (%s)"),*GetNameSafe(NewBot),*GetNameSafe(MonsterData)));
+
+				UARLActionComponent* ActionComponent = Cast<UARLActionComponent>(NewBot->GetComponentByClass(UARLActionComponent::StaticClass()));
+				if (ActionComponent)
+				{
+					for (TSubclassOf<UARLAction> ActionClass : MonsterData->Actions)
+					{
+						ActionComponent->AddAction(NewBot,ActionClass);
+					}
+				}
+			}
+		}
+	}
+	
+	
 }
 
 void AARLGameModeBase::KillAllBots()
@@ -148,6 +201,7 @@ void AARLGameModeBase::KillAllBots()
 
 }
 
+
 void AARLGameModeBase::RespawnPlayerTimeElapsed(AController* controller)
 {
 	if (controller)
@@ -162,7 +216,6 @@ void AARLGameModeBase::SpawnPickups()
 {
 	SpawnPickupQueryRequest.Execute(EEnvQueryRunMode::AllMatching, this, &AARLGameModeBase::OnSpawnPickupsQueryCompleted);
 }
-
 
 void AARLGameModeBase::OnSpawnPickupsQueryCompleted(TSharedPtr<FEnvQueryResult> Result)
 {
@@ -210,6 +263,9 @@ void AARLGameModeBase::OnSpawnPickupsQueryCompleted(TSharedPtr<FEnvQueryResult> 
 	}
 	
 }
+
+
+
 
 void AARLGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {

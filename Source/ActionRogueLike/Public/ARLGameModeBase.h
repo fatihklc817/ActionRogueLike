@@ -3,10 +3,43 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/DataTable.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"
 #include "GameFramework/GameModeBase.h"
 #include "ARLGameModeBase.generated.h"
+
+
+USTRUCT(BlueprintType)
+struct FMonsterInfoRow : public FTableRowBase
+{
+	GENERATED_BODY()
+	
+public:
+	FMonsterInfoRow()
+	{
+		Weight = 1;
+		SpawnCost = 5;
+		KillReward = 20;
+	}
+	
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	FPrimaryAssetId MonsterID;
+	
+	//change to pick this monster
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float Weight;
+
+	//points required by gamemode to spawn this unit
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	float SpawnCost;
+
+	//credits awarded to killer of this unit
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	float KillReward;
+	
+};
+
 
 /**
  * 
@@ -22,6 +55,9 @@ protected:
 	
 	UPROPERTY()
 	class UARLSaveGame* CurrentSaveGame;
+
+	UPROPERTY(EditDefaultsOnly,Category="ai")
+	class UDataTable* MonsterTable;
 	
 	FTimerHandle TimerHandle_SpawnBots;
 
@@ -50,13 +86,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly,Category="pickup")
 	TArray<TSubclassOf<AActor>> PickupClasses;
 	
-	// UPROPERTY(EditDefaultsOnly,Category="pickup")
-	// TSubclassOf<AActor> HealthPickupClass;
-	//
-	// UPROPERTY(EditDefaultsOnly,Category="pickup")
-	// TSubclassOf<AActor> CreditCoinPickupClass;
-	
-
 	UPROPERTY(EditDefaultsOnly, Category="ai")
 	UCurveFloat* DifficultyCurve;
 
@@ -88,13 +117,12 @@ protected:
 	UFUNCTION()
 	void SpawnPickups();
 
-	//UFUNCTION()
-	//void SpawnCrediCoinPickup();
 	
 	void OnSpawnPickupsQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
 
-	//void OnSpawnCreditCoinPickupQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
-
+	UFUNCTION()
+	void OnMonsterLoaded(FPrimaryAssetId LoadedID, FVector SpawnLocation);
+	
 	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 	
 	UFUNCTION(BlueprintCallable, Category="save")

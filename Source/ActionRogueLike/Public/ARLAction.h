@@ -37,7 +37,7 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="ui")
-	UTexture2D* Icon;
+	TSoftObjectPtr<UTexture2D> Icon;
 	
 	UPROPERTY(Replicated)
 	class UARLActionComponent* ActionComp;
