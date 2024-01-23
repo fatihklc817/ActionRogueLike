@@ -4,6 +4,7 @@
 #include "ARLCreditCoinPickup.h"
 
 #include "ARLPlayerState.h"
+#include "ActionRogueLike/ActionRogueLike.h"
 
 void AARLCreditCoinPickup::Interact_Implementation(APawn* InstigatorPawn)
 {
@@ -12,6 +13,7 @@ void AARLCreditCoinPickup::Interact_Implementation(APawn* InstigatorPawn)
 	AARLPlayerState* PState =  InstigatorPawn->GetPlayerState<AARLPlayerState>();
 	if (PState)
 	{
+		LogOnScreen(this,TEXT("girdim coin"),FColor::Green);
 		PState->AddCredits(GivenCreditsAmount);
 	}
 }

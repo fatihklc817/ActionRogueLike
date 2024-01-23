@@ -19,7 +19,9 @@ void UARLWorldUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaT
 	}
 	
 	FVector2D ScreenPosition;    // UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition() this accoount for screen scale in line 26 and layout jitter
-	if(UGameplayStatics::ProjectWorldToScreen(GetOwningPlayer(),AttachedActor->GetActorLocation() + WorldOffset,ScreenPosition))
+	bool bIsOnScreen = UGameplayStatics::ProjectWorldToScreen(GetOwningPlayer(),AttachedActor->GetActorLocation() + WorldOffset,ScreenPosition);
+	
+	if(bIsOnScreen)
 	{
 		float Scale = UWidgetLayoutLibrary::GetViewportScale(this);
 
@@ -29,5 +31,10 @@ void UARLWorldUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaT
 		{
 			ParentSizeBox->SetRenderTranslation(ScreenPosition);
 		}
+	}
+
+	if (ParentSizeBox)
+	{
+		ParentSizeBox->SetVisibility(bIsOnScreen ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
 	}
 }

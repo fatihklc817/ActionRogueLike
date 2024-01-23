@@ -9,6 +9,9 @@
 #include "Net/UnrealNetwork.h"
 
 
+DECLARE_CYCLE_STAT(TEXT("StartActionByName"), STAT_StartActionByName, STATGROUP_ARLGAME);
+
+
 UARLActionComponent::UARLActionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -41,6 +44,21 @@ void UARLActionComponent::BeginPlay()
 	}
 }
 
+void UARLActionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	TArray<UARLAction*> ActionsCopy = Actions;		//in actionEffect StopAction() func  we r calling remove action so if we do not make copy  here it crashes
+	for (UARLAction* Action  : ActionsCopy)
+	{
+		if (Action && Action->GetIsRunning())
+		{
+			Action->StopAction(GetOwner());
+		}	
+	}
+	
+	Super::EndPlay(EndPlayReason);
+	
+}
+
 
 void UARLActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -49,12 +67,13 @@ void UARLActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	//FString Debugmsg = GetNameSafe(GetOwner()) + ":" + ActiveGameplayTags.ToStringSimple();
 	//GEngine -> AddOnScreenDebugMessage(-1,0,FColor::White,Debugmsg);
 
-	for (UARLAction* Action : Actions)
-	{
-		FColor TextColor = Action->GetIsRunning() ? FColor::Blue : FColor::White;
-		FString ActionMsg = FString::Printf(TEXT("[%s] Action : %s"), *GetNameSafe(GetOwner()), *GetNameSafe(Action) );
-		LogOnScreen(this,ActionMsg,TextColor,0);
-	}
+	//loggin actions 
+	// for (UARLAction* Action : Actions)
+	// {
+	// 	FColor TextColor = Action->GetIsRunning() ? FColor::Blue : FColor::White;
+	// 	FString ActionMsg = FString::Printf(TEXT("[%s] Action : %s"), *GetNameSafe(GetOwner()), *GetNameSafe(Action) );
+	// 	LogOnScreen(this,ActionMsg,TextColor,0);
+	// }
 }
 
 void UARLActionComponent::AddAction(AActor* Instigator, TSubclassOf<UARLAction> ActionClass)
@@ -96,6 +115,8 @@ void UARLActionComponent::RemoveAction(UARLAction* ActionToRemove)
 
 bool UARLActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 {
+	SCOPE_CYCLE_COUNTER(STAT_StartActionByName);
+	
 	for(UARLAction* action : Actions)
 	{
 		if (action && action->ActionName == ActionName)
@@ -112,6 +133,9 @@ bool UARLActionComponent::StartActionByName(AActor* Instigator, FName ActionName
 			{
 				ServerStartAction(Instigator,ActionName);
 			}
+
+			TRACE_BOOKMARK(TEXT("StartAction :%s"),*GetNameSafe(action));
+			
 			action->StartAction(Instigator);
 			return true;
 		}

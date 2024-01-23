@@ -22,6 +22,8 @@ AARLMagicProjectile::AARLMagicProjectile()
 
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this,&AARLMagicProjectile::OnActorOverlap);
 	SphereComp->IgnoreActorWhenMoving(GetInstigator(),true);
+
+	InitialLifeSpan = 10.0f;
 }
 
 // Called when the game starts or when spawned

@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 
+DECLARE_STATS_GROUP(TEXT("ARL_Game"), STATGROUP_ARLGAME, STATCAT_Advanced);
+
 static void LogOnScreen(UObject* WorldContext, FString Msg, FColor Color = FColor::White, float Duration = 5)
 {
 	if (!ensure(WorldContext))
@@ -22,4 +24,4 @@ static void LogOnScreen(UObject* WorldContext, FString Msg, FColor Color = FColo
 	{
 		GEngine->AddOnScreenDebugMessage(-1,Duration,Color,NetPrefix + Msg);
 	}
-}
+} 
